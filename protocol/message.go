@@ -54,7 +54,7 @@ type Message struct {
 	item                  map[string]interface{}
 }
 
-// 获取消息的发送者
+// Sender 获取消息的发送者
 func (m *Message) Sender() (*User, error) {
 	members, err := m.Bot.self.Members(true)
 	if err != nil {
@@ -70,7 +70,7 @@ func (m *Message) Sender() (*User, error) {
 	return user.First().Detail()
 }
 
-// 获取消息在群里面的发送者
+// SenderInGroup 获取消息在群里面的发送者
 func (m *Message) SenderInGroup() (*User, error) {
 	if !m.IsSendByGroup() {
 		return nil, errors.New("message is not from group")
@@ -90,7 +90,7 @@ func (m *Message) SenderInGroup() (*User, error) {
 	return users.First(), nil
 }
 
-// 获取消息的接收者
+// Receiver 获取消息的接收者
 func (m *Message) Receiver() (*User, error) {
 	if m.IsSendByGroup() {
 		if sender, err := m.Sender(); err != nil {
@@ -111,22 +111,22 @@ func (m *Message) Receiver() (*User, error) {
 	}
 }
 
-// 判断消息是否由自己发送
+// IsSendBySelf 判断消息是否由自己发送
 func (m *Message) IsSendBySelf() bool {
 	return m.FromUserName == m.Bot.self.User.UserName
 }
 
-// 判断消息是否由好友发送
+// IsSendByFriend 判断消息是否由好友发送
 func (m *Message) IsSendByFriend() bool {
 	return !m.IsSendByGroup() && strings.HasPrefix(m.FromUserName, "@")
 }
 
-// 判断消息是否由群组发送
+// IsSendByGroup 判断消息是否由群组发送
 func (m *Message) IsSendByGroup() bool {
 	return strings.HasPrefix(m.FromUserName, "@@")
 }
 
-// 回复消息
+// Reply 回复消息
 func (m *Message) Reply(msgType int, content, mediaId string) (*SentMessage, error) {
 	msg := NewSendMessage(msgType, content, m.Bot.self.User.UserName, m.FromUserName, mediaId)
 	info := m.Bot.storage.LoginInfo
@@ -134,19 +134,19 @@ func (m *Message) Reply(msgType int, content, mediaId string) (*SentMessage, err
 	return m.Bot.Caller.WebWxSendMsg(msg, info, request)
 }
 
-// 回复文本消息
+// ReplyText 回复文本消息
 func (m *Message) ReplyText(content string) (*SentMessage, error) {
 	return m.Reply(TextMessage, content, "")
 }
 
-// 回复图片消息
+// ReplyImage 回复图片消息
 func (m *Message) ReplyImage(file *os.File) (*SentMessage, error) {
 	info := m.Bot.storage.LoginInfo
 	request := m.Bot.storage.Request
 	return m.Bot.Caller.WebWxSendImageMsg(file, request, info, m.Bot.self.UserName, m.FromUserName)
 }
 
-// 回复文件消息
+// ReplyFile 回复文件消息
 func (m *Message) ReplyFile(file *os.File) (*SentMessage, error) {
 	info := m.Bot.storage.LoginInfo
 	request := m.Bot.storage.Request
@@ -185,7 +185,7 @@ func (m *Message) IsMedia() bool {
 	return m.MsgType == 49
 }
 
-// 判断是否撤回
+// IsRecalled 判断是否撤回
 func (m *Message) IsRecalled() bool {
 	return m.MsgType == 10002
 }
@@ -198,17 +198,17 @@ func (m *Message) IsNotify() bool {
 	return m.MsgType == 51 && m.StatusNotifyCode != 0
 }
 
-// 判断当前的消息是不是微信转账
+// IsTransferAccounts 判断当前的消息是不是微信转账
 func (m *Message) IsTransferAccounts() bool {
 	return m.IsMedia() && m.FileName == "微信转账"
 }
 
-// 否发出红包判断当前是
+// IsSendRedPacket 否发出红包判断当前是
 func (m *Message) IsSendRedPacket() bool {
 	return m.IsSystem() && m.Content == "发出红包，请在手机上查看"
 }
 
-// 判断当前是否收到红包
+// IsReceiveRedPacket 判断当前是否收到红包
 func (m *Message) IsReceiveRedPacket() bool {
 	return m.IsSystem() && m.Content == "收到红包，请在手机上查看"
 }
@@ -217,17 +217,17 @@ func (m *Message) IsSysNotice() bool {
 	return m.MsgType == 9999
 }
 
-// 判断是否为操作通知消息
+// StatusNotify 判断是否为操作通知消息
 func (m *Message) StatusNotify() bool {
 	return m.MsgType == 51
 }
 
-// 判断消息是否为文件类型的消息
+// HasFile 判断消息是否为文件类型的消息
 func (m *Message) HasFile() bool {
 	return m.IsPicture() || m.IsVoice() || m.IsVideo() || m.IsMedia()
 }
 
-// 获取文件消息的文件
+// GetFile 获取文件消息的文件
 func (m *Message) GetFile() (*http.Response, error) {
 	if !m.HasFile() {
 		return nil, errors.New("invalid message type")
@@ -247,7 +247,7 @@ func (m *Message) GetFile() (*http.Response, error) {
 	return nil, errors.New("unsupported type")
 }
 
-// 获取card类型
+// Card 获取card类型
 func (m *Message) Card() (*Card, error) {
 	if !m.IsCard() {
 		return nil, errors.New("card message required")
@@ -258,7 +258,7 @@ func (m *Message) Card() (*Card, error) {
 	return &card, err
 }
 
-// 获取FriendAddMessageContent内容
+// FriendAddMessageContent 获取FriendAddMessageContent内容
 func (m *Message) FriendAddMessageContent() (*FriendAddMessage, error) {
 	if !m.IsFriendAdd() {
 		return nil, errors.New("friend add message required")
@@ -269,7 +269,7 @@ func (m *Message) FriendAddMessageContent() (*FriendAddMessage, error) {
 	return &f, err
 }
 
-// 获取撤回消息的内容
+// RevokeMsg 获取撤回消息的内容
 func (m *Message) RevokeMsg() (*RevokeMsg, error) {
 	if !m.IsRecalled() {
 		return nil, errors.New("recalled message required")
@@ -280,7 +280,7 @@ func (m *Message) RevokeMsg() (*RevokeMsg, error) {
 	return &r, err
 }
 
-// 同意好友的请求
+// Agree 同意好友的请求
 func (m *Message) Agree(verifyContents ...string) error {
 	if !m.IsFriendAdd() {
 		return fmt.Errorf("friend add message required")
@@ -292,7 +292,7 @@ func (m *Message) Agree(verifyContents ...string) error {
 	return m.Bot.Caller.WebWxVerifyUser(m.Bot.storage, m.RecommendInfo, builder.String())
 }
 
-// 往消息上下文中设置值
+// Set 往消息上下文中设置值
 // goroutine safe
 func (m *Message) Set(key string, value interface{}) {
 	m.mu.Lock()
@@ -303,7 +303,7 @@ func (m *Message) Set(key string, value interface{}) {
 	m.item[key] = value
 }
 
-// 从消息上下文中获取值
+// Get 从消息上下文中获取值
 // goroutine safe
 func (m *Message) Get(key string) (value interface{}, exist bool) {
 	m.mu.RLock()
@@ -335,7 +335,7 @@ func (m *Message) init(bot *Bot) {
 	}
 }
 
-// 发送消息的结构体
+// SendMessage 发送消息的结构体
 type SendMessage struct {
 	Type         int
 	Content      string
@@ -346,7 +346,7 @@ type SendMessage struct {
 	MediaId      string `json:"MediaId,omitempty"`
 }
 
-// SendMessage的构造方法
+// NewSendMessage SendMessage的构造方法
 func NewSendMessage(msgType int, content, fromUserName, toUserName, mediaId string) *SendMessage {
 	id := strconv.FormatInt(time.Now().UnixNano()/1e2, 10)
 	return &SendMessage{
@@ -360,17 +360,17 @@ func NewSendMessage(msgType int, content, fromUserName, toUserName, mediaId stri
 	}
 }
 
-// 文本消息的构造方法
+// NewTextSendMessage 文本消息的构造方法
 func NewTextSendMessage(content, fromUserName, toUserName string) *SendMessage {
 	return NewSendMessage(TextMessage, content, fromUserName, toUserName, "")
 }
 
-// 媒体消息的构造方法
+// NewMediaSendMessage 媒体消息的构造方法
 func NewMediaSendMessage(msgType int, fromUserName, toUserName, mediaId string) *SendMessage {
 	return NewSendMessage(msgType, "", fromUserName, toUserName, mediaId)
 }
 
-// 一些特殊类型的消息会携带该结构体信息
+// RecommendInfo 一些特殊类型的消息会携带该结构体信息
 type RecommendInfo struct {
 	OpCode     int
 	Scene      int
@@ -388,7 +388,7 @@ type RecommendInfo struct {
 	UserName   string
 }
 
-// 名片消息内容
+// Card 名片消息内容
 type Card struct {
 	XMLName                 xml.Name `xml:"msg"`
 	ImageStatus             int      `xml:"imagestatus,attr"`
@@ -412,7 +412,7 @@ type Card struct {
 	RegionCode              string   `xml:"regionCode,attr"`
 }
 
-// 好友添加消息信息内容
+// FriendAddMessage 好友添加消息信息内容
 type FriendAddMessage struct {
 	XMLName           xml.Name `xml:"msg"`
 	Shortpy           int      `xml:"shortpy,attr"`
@@ -455,7 +455,7 @@ type FriendAddMessage struct {
 	} `xml:"brandlist"`
 }
 
-// 撤回消息Content
+// RevokeMsg 撤回消息Content
 type RevokeMsg struct {
 	SysMsg    xml.Name `xml:"sysmsg"`
 	Type      string   `xml:"type,attr"`
@@ -467,14 +467,14 @@ type RevokeMsg struct {
 	} `xml:"revokemsg"`
 }
 
-// 已发送的信息
+// SentMessage 已发送的信息
 type SentMessage struct {
 	*SendMessage
 	Self  *Self
 	MsgId string
 }
 
-// 撤回该消息
+// Revoke 撤回该消息
 func (s *SentMessage) Revoke() error {
 	return s.Self.RevokeMessage(s)
 }

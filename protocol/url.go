@@ -1,6 +1,6 @@
 package protocol
 
-// url信息存储
+// UrlManager url信息存储
 type UrlManager struct {
 	baseUrl                 string
 	webWxNewLoginPageUrl    string
@@ -89,7 +89,7 @@ const (
 	Desktop mode = "desktop" // 突破网页版登录限制
 )
 
-// 通过mode获取完善的UrlManager,
+// GetUrlManagerByMode 通过mode获取完善的UrlManager,
 // mode有且仅有两种模式: Normal && Desktop
 func GetUrlManagerByMode(m mode) UrlManager {
 	switch m {

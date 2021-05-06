@@ -93,7 +93,7 @@ var (
 	noSuchUserFoundError = errors.New("no such user found")
 )
 
-// ALL跟search函数搭配
+// ALL 跟search函数搭配
 //      friends.Search(protocol.ALL, )
 const ALL = 0
 

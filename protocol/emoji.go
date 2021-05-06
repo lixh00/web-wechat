@@ -9,7 +9,7 @@ var (
 	emojiRegexp = regexp.MustCompile(`<span class="emoji emoji(.*?)"></span>`)
 )
 
-// emoji 表情
+// Emoji emoji 表情
 // 字段太多了,污染命名空间,封装成struct返回
 var Emoji = struct {
 	Smile        string

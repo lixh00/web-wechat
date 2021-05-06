@@ -5,6 +5,7 @@ import (
 	"web-wechat/protocol"
 )
 
+// InitWeChatBot 初始化微信机器人
 func InitWeChatBot() {
 	bot := protocol.DefaultBot(protocol.Desktop)
 
