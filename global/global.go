@@ -1,7 +1,7 @@
 package global
 
-import "github.com/eatMoreApple/openwechat"
+import "web-wechat/protocol"
 
 var (
-	WeChatBot	*openwechat.Bot
+	WeChatBot *protocol.Bot
 )

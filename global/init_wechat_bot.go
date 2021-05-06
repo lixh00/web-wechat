@@ -2,14 +2,14 @@ package global
 
 import (
 	"fmt"
-	"github.com/eatMoreApple/openwechat"
+	"web-wechat/protocol"
 )
 
 func InitWeChatBot() {
-	bot := openwechat.DefaultBot(openwechat.Desktop)
+	bot := protocol.DefaultBot(protocol.Desktop)
 
 	// 注册消息处理函数
-	bot.MessageHandler = func(msg *openwechat.Message) {
+	bot.MessageHandler = func(msg *protocol.Message) {
 		// TODO 保存消息到数据库
 		fmt.Println(msg)
 	}

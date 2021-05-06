@@ -1,7 +1,5 @@
 github.com/andybalholm/brotli v1.0.1 h1:KqhlKozYbRtJvsPrrEeXcO+N2l6NYT5A2QAFmSULpEc=
 github.com/andybalholm/brotli v1.0.1/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
-github.com/eatMoreApple/openwechat v0.0.0-20210430093238-d0444bc95467 h1:g7fsSJu+8Rd3xnh7Y8mJYKZrFtBoWnTXa7WHbmzX4OI=
-github.com/eatMoreApple/openwechat v0.0.0-20210430093238-d0444bc95467/go.mod h1:+PZGlX/f5h/Ru+UUBxSv/M4ecIBtZz9rUQqeKQLLirc=
 github.com/gofiber/fiber/v2 v2.8.0 h1:BdWvZmg/WY/Vjtjm38aXOp1Lks1BhuyS2b7lSWSPAzk=
 github.com/gofiber/fiber/v2 v2.8.0/go.mod h1:Ah3IJikrKNRepl/HuVawppS25X7FWohwfCSRn7kJG28=
 github.com/klauspost/compress v1.11.8/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=

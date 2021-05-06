@@ -23,7 +23,7 @@ func main() {
 	// 初始化微信机器人插件
 	global.InitWeChatBot()
 
-	// TODO 初始化路由
+	// 初始化路由
 	route.InitRoute(app)
 
 	// TODO 初始化数据库连接等
