@@ -14,8 +14,8 @@ type Response struct {
 
 // 定义状态码
 const (
-	ERROR   = 7
-	SUCCESS = 0
+	ERROR   = 0
+	SUCCESS = 1
 )
 
 // Result 手动组装返回结果

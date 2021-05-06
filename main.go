@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
+	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/route"
 )
@@ -15,6 +16,14 @@ func main() {
 		ServerHeader: "wechat",
 		// 接口地址是否区分大小写
 		CaseSensitive: true,
+		// 全局错误处理
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			return ctx.Status(fiber.StatusInternalServerError).
+				JSON(core.Response{
+					Code: core.ERROR,
+					Msg:  "系统错误",
+				})
+		},
 	})
 
 	// 使用日志中间件 - 使用默认配置

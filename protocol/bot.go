@@ -139,6 +139,34 @@ func (b *Bot) LoginWithUUID(uuid string) error {
 	}
 }
 
+func (b *Bot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retry ...bool) error {
+	b.isHot = true
+	b.hotReloadStorage = storage
+
+	var err error
+
+	// 如果load出错了,就执行正常登陆逻辑
+	// 第一次没有数据load都会出错的
+	if err = storage.Load(); err != nil {
+		return b.Login()
+	}
+
+	if err = b.hotLoginInit(); err != nil {
+		return err
+	}
+
+	// 如果webInit出错,则说明可能身份信息已经失效
+	// 如果retry为True的话,则进行正常登陆
+	if err = b.webInit(); err != nil {
+		if len(retry) > 0 {
+			if retry[0] {
+				return b.LoginWithUUID(uuid)
+			}
+		}
+	}
+	return err
+}
+
 // Login 用户登录
 // 该方法会一直阻塞，直到用户扫码登录，或者二维码过期
 func (b *Bot) Login() error {
