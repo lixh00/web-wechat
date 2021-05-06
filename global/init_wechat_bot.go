@@ -5,8 +5,8 @@ import (
 	"web-wechat/protocol"
 )
 
-// InitWeChatBot 初始化微信机器人
-func InitWeChatBot() {
+// InitWechatBotHandle 初始化微信机器人
+func InitWechatBotHandle() *protocol.Bot {
 	bot := protocol.DefaultBot(protocol.Desktop)
 
 	// 注册消息处理函数
@@ -15,5 +15,5 @@ func InitWeChatBot() {
 		fmt.Println(msg)
 	}
 
-	WeChatBot = bot
+	return bot
 }

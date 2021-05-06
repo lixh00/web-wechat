@@ -20,11 +20,11 @@ func main() {
 	// 使用日志中间件 - 使用默认配置
 	app.Use(logger.New())
 
-	// 初始化微信机器人插件
-	global.InitWeChatBot()
-
 	// 初始化路由
 	route.InitRoute(app)
+
+	// 初始化WechatBotMap
+	global.InitWechatBotsMap()
 
 	// TODO 初始化数据库连接等
 

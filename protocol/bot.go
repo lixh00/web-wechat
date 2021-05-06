@@ -98,6 +98,47 @@ func (b *Bot) hotLoginInit() error {
 	return nil
 }
 
+// GetUUID 获取UUID
+func (b *Bot) GetUUID() (*string, error) {
+	uuid, err := b.Caller.GetLoginUUID()
+	if err != nil {
+		return nil, err
+	}
+	// 二维码获取回调
+	if b.UUIDCallback != nil {
+		b.UUIDCallback(uuid)
+	}
+	return &uuid, nil
+}
+
+// LoginWithUUID 根据传入的UUID登录
+func (b *Bot) LoginWithUUID(uuid string) error {
+	for {
+		// 长轮询检查是否扫码登录
+		resp, err := b.Caller.CheckLogin(uuid)
+		if err != nil {
+			return err
+		}
+		switch resp.Code {
+		case statusSuccess:
+			// 判断是否有登录回调，如果有执行它
+			if b.LoginCallBack != nil {
+				b.LoginCallBack(resp.Raw)
+			}
+			return b.handleLogin(resp.Raw)
+		case statusScanned:
+			// 执行扫码回调
+			if b.ScanCallBack != nil {
+				b.ScanCallBack(resp.Raw)
+			}
+		case statusTimeout:
+			return errors.New("login time out")
+		case statusWait:
+			continue
+		}
+	}
+}
+
 // Login 用户登录
 // 该方法会一直阻塞，直到用户扫码登录，或者二维码过期
 func (b *Bot) Login() error {
