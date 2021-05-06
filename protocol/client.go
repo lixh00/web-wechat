@@ -1,10 +1,12 @@
 package protocol
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
@@ -264,12 +266,14 @@ func (c *Client) WebWxUploadMediaByChunk(file *os.File, request *BaseRequest, in
 		return nil, err
 	}
 
-	buffer := bytes.Buffer{}
-	if _, err := buffer.ReadFrom(file); err != nil {
+	reader := bufio.NewReader(file)
+
+	h := md5.New()
+	if _, err = io.Copy(h, reader); err != nil {
 		return nil, err
 	}
-	data := buffer.Bytes()
-	fileMd5 := fmt.Sprintf("%x", md5.Sum(data))
+
+	fileMd5 := fmt.Sprintf("%x", h.Sum(nil))
 
 	sate, err := file.Stat()
 	if err != nil {
@@ -361,12 +365,9 @@ func (c *Client) WebWxUploadMediaByChunk(file *os.File, request *BaseRequest, in
 		if w, err := writer.CreateFormFile("filename", file.Name()); err != nil {
 			return nil, err
 		} else {
-			var chunkData []byte
-			// 判断是不是最后一次
-			if !isLastTime {
-				chunkData = data[int64(chunk)*chunkSize : (int64(chunk)+1)*chunkSize]
-			} else {
-				chunkData = data[int64(chunk)*chunkSize:]
+			chunkData := make([]byte, chunkSize)
+			if _, err := file.Read(chunkData); err != nil && err != io.EOF {
+				return nil, err
 			}
 			if _, err = w.Write(chunkData); err != nil {
 				return nil, err
