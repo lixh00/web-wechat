@@ -8,10 +8,13 @@ import (
 
 // GetCurrentUserInfoHandle 获取当前登录用户
 func GetCurrentUserInfoHandle(ctx echo.Context) error {
-	deviceId := ctx.QueryParam("deviceId")
-	bot := global.GetBot(deviceId)
+	appKey := ctx.Request().Header.Get("AppKey")
+	if len(appKey) < 1 {
+		return core.FailWithMessage("AppKey为必传参数", ctx)
+	}
+	bot := global.GetBot(appKey)
 	if nil == bot {
-		return core.FailWithMessage("设备ID无登录记录", ctx)
+		return core.FailWithMessage("未获取到登录记录", ctx)
 	}
 	user, err := bot.GetCurrentUser()
 	if err != nil {

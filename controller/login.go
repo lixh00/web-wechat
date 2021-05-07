@@ -15,9 +15,9 @@ type loginResponse struct {
 
 // GetLoginUrlHandle 获取登录扫码连接
 func GetLoginUrlHandle(ctx echo.Context) error {
-	deviceId := ctx.QueryParam("deviceId")
-	if len(deviceId) < 1 {
-		return core.FailWithMessage("设备号必传", ctx)
+	appKey := ctx.Request().Header.Get("AppKey")
+	if len(appKey) < 1 {
+		return core.FailWithMessage("AppKey为必传参数", ctx)
 	}
 	log.Println("收到登录请求")
 
@@ -35,7 +35,7 @@ func GetLoginUrlHandle(ctx echo.Context) error {
 	url = url + *uuid
 
 	// 保存Bot到实例
-	global.SetBot(deviceId, bot)
+	global.SetBot(appKey, bot)
 
 	// 返回数据
 	return core.OkWithData(loginResponse{Uuid: *uuid, Url: url}, ctx)
@@ -43,12 +43,12 @@ func GetLoginUrlHandle(ctx echo.Context) error {
 
 // LoginHandle 登录
 func LoginHandle(ctx echo.Context) error {
-	deviceId := ctx.QueryParam("deviceId")
+	appKey := ctx.Request().Header.Get("AppKey")
 	uuid := ctx.QueryParam("uuid")
-	if len(deviceId) < 1 {
-		return core.FailWithMessage("设备号必传", ctx)
+	if len(appKey) < 1 {
+		return core.FailWithMessage("AppKey为必传参数", ctx)
 	}
-	bot := global.GetBot(deviceId)
+	bot := global.GetBot(appKey)
 
 	// 设置登录成功回调
 	bot.LoginCallBack = func(body []byte) {
