@@ -15,7 +15,12 @@ func main() {
 	app.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `${time_rfc3339} [${level}] [${remote_ip}] ${method} [${status}] ${uri}` + "\n",
 	}))
+	// 使用Recover (恢复) 中间件
 	app.Use(middleware.Recover())
+	// 使用Gzip中间件
+	app.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Level: 5,
+	}))
 
 	// 初始化路由
 	route.InitRoute(app)
