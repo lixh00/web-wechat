@@ -1,18 +1,23 @@
 package controller
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 	"log"
 	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/protocol"
 )
 
+type loginResponse struct {
+	Uuid string `json:"uuid"`
+	Url  string `json:"url"`
+}
+
 // GetLoginUrlHandle 获取登录扫码连接
-func GetLoginUrlHandle(ctx *fiber.Ctx) error {
-	deviceId := ctx.Query("deviceId")
+func GetLoginUrlHandle(ctx echo.Context) error {
+	deviceId := ctx.QueryParam("deviceId")
 	if len(deviceId) < 1 {
-		return ctx.SendString("设备号必传")
+		return core.FailWithMessage("设备号必传", ctx)
 	}
 	log.Println("收到登录请求")
 
@@ -33,21 +38,21 @@ func GetLoginUrlHandle(ctx *fiber.Ctx) error {
 	global.SetBot(deviceId, bot)
 
 	// 返回数据
-	return core.OkWithData(fiber.Map{"uuid": uuid, "url": url}, ctx)
+	return core.OkWithData(loginResponse{Uuid: *uuid, Url: url}, ctx)
 }
 
 // LoginHandle 登录
-func LoginHandle(ctx *fiber.Ctx) error {
-	deviceId := ctx.Query("deviceId")
-	uuid := ctx.Query("uuid")
+func LoginHandle(ctx echo.Context) error {
+	deviceId := ctx.QueryParam("deviceId")
+	uuid := ctx.QueryParam("uuid")
 	if len(deviceId) < 1 {
-		return ctx.SendString("设备号必传")
+		return core.FailWithMessage("设备号必传", ctx)
 	}
 	bot := global.GetBot(deviceId)
 
 	// 设置登录成功回调
 	bot.LoginCallBack = func(body []byte) {
-		log.Println(string(body))
+		log.Println("登录成功")
 	}
 
 	// 登录

@@ -1,14 +1,14 @@
 package route
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 	"web-wechat/controller"
 )
 
 // initLoginRoute 初始化登录路由信息
-func initLoginRoute(app *fiber.App) {
+func initLoginRoute(app *echo.Echo) {
 	// 获取登录二维码
-	app.Get("/login", controller.GetLoginUrlHandle)
+	app.GET("/login", controller.GetLoginUrlHandle)
 	// 检查登录状态
-	app.Post("/login", controller.LoginHandle)
+	app.POST("/login", controller.LoginHandle)
 }

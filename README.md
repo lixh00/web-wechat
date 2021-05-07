@@ -11,4 +11,6 @@ git clone https://xxxx.xxx.xx/xx.git
 go mod download
 # 编译
 go build main.go
+# 清理无用mod引用
+go mod tidy
 ```

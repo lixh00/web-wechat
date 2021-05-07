@@ -1,9 +1,11 @@
 package route
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/labstack/echo/v4"
+)
 
 // InitRoute 初始化路由
-func InitRoute(app *fiber.App) {
+func InitRoute(app *echo.Echo) {
 	// 初始化登录相关路由
 	initLoginRoute(app)
 

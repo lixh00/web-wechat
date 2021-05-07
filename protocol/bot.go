@@ -388,6 +388,7 @@ func GetQrcodeUrl(uuid string) string {
 
 // PrintlnQrcodeUrl 打印登录二维码
 func PrintlnQrcodeUrl(uuid string) {
-	println("访问下面网址扫描二维码登录")
-	println(GetQrcodeUrl(uuid))
+	//println("访问下面网址扫描二维码登录")
+	//println(GetQrcodeUrl(uuid))
+	log.Println("请打开后面的网址扫码登录：", GetQrcodeUrl(uuid))
 }
