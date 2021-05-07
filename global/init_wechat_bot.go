@@ -1,6 +1,7 @@
 package global
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"web-wechat/protocol"
@@ -17,6 +18,13 @@ func InitWechatBotHandle() *protocol.Bot {
 	// 注册消息处理函数
 	bot.MessageHandler = func(msg *protocol.Message) {
 		fmt.Println(msg)
+
+		m, err := json.Marshal(msg)
+		if err != nil {
+			log.Println("消息转换失败：", err.Error())
+		}
+		log.Println(m)
+
 		if msg.MsgType == 1 {
 			_, err := msg.ReplyText("您说：" + msg.Content)
 			if err != nil {
