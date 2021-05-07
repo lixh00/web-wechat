@@ -1,6 +1,6 @@
 ## WebWechat
 
-基于`Golang`语言和`Fiber`框架的个人微信系统
+基于`Golang`语言和`Echo`框架的个人微信系统
 
 ## 使用方式
 
