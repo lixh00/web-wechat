@@ -49,6 +49,7 @@ func DefaultClient(urlManager UrlManager) *Client {
 // 方便热登陆时获取
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36")
+	req.URL.RawQuery += "&target=t"
 	resp, err := c.Client.Do(req)
 	if err != nil {
 		return resp, err

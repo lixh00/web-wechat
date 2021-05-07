@@ -1,8 +1,6 @@
 package global
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"web-wechat/protocol"
 )
@@ -17,27 +15,32 @@ func InitWechatBotHandle() *protocol.Bot {
 	}
 	// 注册消息处理函数
 	bot.MessageHandler = func(msg *protocol.Message) {
-		fmt.Println(msg)
+		//fmt.Println(msg)
 
-		m, err := json.Marshal(msg)
-		if err != nil {
-			log.Println("消息转换失败：", err.Error())
-		}
-		log.Println(m)
+		//m, err := json.Marshal(msg)
+		//if err != nil {
+		//	log.Println("消息转换失败：", err.Error())
+		//}
+		//log.Println(m)
 
-		if msg.MsgType == 1 {
-			_, err := msg.ReplyText("您说：" + msg.Content)
-			if err != nil {
-				log.Println("回复消息发生错误: ", err.Error())
-			}
-		}
+		//if msg.MsgType == 1 {
+		//	_, err := msg.ReplyText("您说：" + msg.Content)
+		//	if err != nil {
+		//		log.Println("回复消息发生错误: ", err.Error())
+		//	}
+		//}
 		// TODO 保存消息到数据库
-		//log.Fatalf("[收到新消息] 消息ID：%v, 消息类型：%v, 发件人：%v, 收件人：%v, 正文：%v",
-		//	msg.MsgId,
-		//	msg.MsgType,
-		//	msg.FromUserName,
-		//	msg.ToUserName,
-		//	msg.Content)
+
+		sender, err := msg.Sender()
+		if err != nil {
+			log.Println("获取消息发送者失败", err.Error())
+		} else {
+			log.Println("消息发送者：", sender.NickName)
+		}
+		if msg.IsText() {
+			log.Printf("[收到新消息] 内容：%v \n", msg.Content)
+		}
+
 	}
 
 	return bot

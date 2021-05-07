@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
+	"os"
 	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/route"
@@ -27,7 +28,17 @@ func main() {
 	})
 
 	// 使用日志中间件 - 使用默认配置
-	app.Use(logger.New())
+	//app.Use(logger.New())
+	// 输出日志到文件
+	file, err := os.OpenFile("./logs/run.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer file.Close()
+	// 配置日志中间件
+	app.Use(logger.New(logger.Config{
+		Output: file,
+	}))
 
 	// 初始化路由
 	route.InitRoute(app)
