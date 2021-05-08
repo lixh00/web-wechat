@@ -56,16 +56,19 @@ func LoginHandle(ctx *gin.Context) {
 	}
 	// 获取Bot对象
 	bot := global.GetBot(appKey)
+	if bot == nil {
+		bot = global.InitWechatBotHandle()
+		global.SetBot(appKey, bot)
+	}
 
 	// 设置登录成功回调
 	bot.LoginCallBack = func(body []byte) {
 		log.Println("登录成功")
 	}
 
-	// 登录
 	// 热登录
-	s := protocol.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
-	if err := bot.HotLoginWithUUID(uuid, s, true); err != nil {
+	storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
+	if err := bot.HotLoginWithUUID(uuid, storage, true); err != nil {
 		log.Println(err)
 		core.FailWithMessage("登录失败："+err.Error(), ctx)
 		return
