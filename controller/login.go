@@ -63,17 +63,25 @@ func LoginHandle(ctx *gin.Context) {
 	}
 
 	// 登录
-	if err := bot.LoginWithUUID(uuid); err != nil {
+	// 热登录
+	s := protocol.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
+	if err := bot.HotLoginWithUUID(uuid, s, true); err != nil {
 		log.Println(err)
 		core.FailWithMessage("登录失败："+err.Error(), ctx)
 		return
 	}
+	// 冷登录
+	//if err := bot.LoginWithUUID(uuid); err != nil {
+	//	log.Println(err)
+	//	core.FailWithMessage("登录失败："+err.Error(), ctx)
+	//	return
+	//}
 	user, err := bot.GetCurrentUser()
 	if err != nil {
 		log.Println("获取登录用户信息失败: ", err.Error())
 		core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
 		return
 	}
-	log.Println("当前登录用户：", user.NickName, user.UserName)
+	log.Println("当前登录用户：", user.NickName)
 	core.OkWithMessage("登录成功", ctx)
 }

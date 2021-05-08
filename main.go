@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"web-wechat/global"
+	"web-wechat/protocol"
 	"web-wechat/route"
 )
 
@@ -18,7 +19,8 @@ func main() {
 	// 初始化WechatBotMap
 	global.InitWechatBotsMap()
 
-	// TODO 初始化数据库连接等
+	// 初始化Redis连接
+	protocol.InitRedisConnHandle()
 
 	// 监听端口
 	app.Run(":8888")

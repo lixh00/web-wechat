@@ -223,8 +223,9 @@ func TestAgreeFriendsAdd(t *testing.T) {
 }
 
 func TestHotLogin(t *testing.T) {
-	filename := "test.json"
-	bot := defaultBot()
+	filename := "wecaht:login:oneplus1"
+	InitRedisConnHandle()
+	bot := defaultBot(Desktop)
 	s := NewJsonFileHotReloadStorage(filename)
 	if err := bot.HotLogin(s); err != nil {
 		t.Error(err)

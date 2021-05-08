@@ -140,6 +140,7 @@ func (b *Bot) LoginWithUUID(uuid string) error {
 	}
 }
 
+// HotLoginWithUUID 根据UUID热登录
 func (b *Bot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retry ...bool) error {
 	b.isHot = true
 	b.hotReloadStorage = storage
@@ -149,7 +150,7 @@ func (b *Bot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retry ...b
 	// 如果load出错了,就执行正常登陆逻辑
 	// 第一次没有数据load都会出错的
 	if err = storage.Load(); err != nil {
-		return b.Login()
+		return b.LoginWithUUID(uuid)
 	}
 
 	if err = b.hotLoginInit(); err != nil {

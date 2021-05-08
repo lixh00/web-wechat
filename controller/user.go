@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"web-wechat/core"
 	"web-wechat/global"
 )
@@ -30,6 +31,8 @@ func GetCurrentUserInfoHandle(ctx *gin.Context) {
 		core.FailWithMessage("获取登录用户信息失败", ctx)
 		return
 	}
+
+	log.Println("登录用户：", user.NickName)
 
 	core.OkWithData(user, ctx)
 }
