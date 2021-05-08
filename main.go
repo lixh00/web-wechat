@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/route"
 )
@@ -21,7 +22,8 @@ func main() {
 	app.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
 	}))
-
+	// 定义全局异常处理
+	app.HTTPErrorHandler = core.CustomHTTPErrorHandler
 	// 初始化路由
 	route.InitRoute(app)
 
