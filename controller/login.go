@@ -8,7 +8,8 @@ import (
 	"web-wechat/protocol"
 )
 
-type loginResponse struct {
+// 获取登录URL返回结构体
+type loginUrlResponse struct {
 	Uuid string `json:"uuid"`
 	Url  string `json:"url"`
 }
@@ -39,7 +40,7 @@ func GetLoginUrlHandle(ctx *gin.Context) {
 	global.SetBot(appKey, bot)
 
 	// 返回数据
-	core.OkWithData(loginResponse{Uuid: *uuid, Url: url}, ctx)
+	core.OkWithData(loginUrlResponse{Uuid: *uuid, Url: url}, ctx)
 }
 
 // LoginHandle 登录

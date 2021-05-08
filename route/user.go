@@ -9,5 +9,8 @@ import (
 func initUserRoute(app *gin.Engine) {
 	group := app.Group("/user")
 
+	// 获取登录的用户信息
 	group.GET("/info", controller.GetCurrentUserInfoHandle)
+	// 获取好友列表
+	group.GET("/friends", controller.GetFriendsListHandle)
 }
