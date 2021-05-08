@@ -1,11 +1,11 @@
 package route
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
 // InitRoute 初始化路由
-func InitRoute(app *echo.Echo) {
+func InitRoute(app *gin.Engine) {
 	// 初始化登录相关路由
 	initLoginRoute(app)
 

@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 	"log"
 	"web-wechat/core"
 	"web-wechat/global"
@@ -14,12 +14,12 @@ type loginResponse struct {
 }
 
 // GetLoginUrlHandle 获取登录扫码连接
-func GetLoginUrlHandle(ctx echo.Context) error {
-	appKey := ctx.Request().Header.Get("AppKey")
+func GetLoginUrlHandle(ctx *gin.Context) {
+	appKey := ctx.Request.Header.Get("AppKey")
 	if len(appKey) < 1 {
-		return core.FailWithMessage("AppKey为必传参数", ctx)
+		core.FailWithMessage("AppKey为必传参数", ctx)
+		return
 	}
-	log.Println("收到登录请求")
 
 	// 获取一个微信机器人对象
 	bot := global.InitWechatBotHandle()
@@ -29,7 +29,8 @@ func GetLoginUrlHandle(ctx echo.Context) error {
 	bot.UUIDCallback = protocol.PrintlnQrcodeUrl
 	uuid, err := bot.GetUUID()
 	if err != nil {
-		return core.FailWithMessage("获取UUID失败", ctx)
+		core.FailWithMessage("获取UUID失败", ctx)
+		return
 	}
 	// 拼接URL
 	url = url + *uuid
@@ -38,16 +39,22 @@ func GetLoginUrlHandle(ctx echo.Context) error {
 	global.SetBot(appKey, bot)
 
 	// 返回数据
-	return core.OkWithData(loginResponse{Uuid: *uuid, Url: url}, ctx)
+	core.OkWithData(loginResponse{Uuid: *uuid, Url: url}, ctx)
 }
 
 // LoginHandle 登录
-func LoginHandle(ctx echo.Context) error {
-	appKey := ctx.Request().Header.Get("AppKey")
-	uuid := ctx.QueryParam("uuid")
+func LoginHandle(ctx *gin.Context) {
+	appKey := ctx.Request.Header.Get("AppKey")
+	uuid := ctx.Query("uuid")
 	if len(appKey) < 1 {
-		return core.FailWithMessage("AppKey为必传参数", ctx)
+		core.FailWithMessage("AppKey为必传参数", ctx)
+		return
 	}
+	if len(uuid) < 1 {
+		core.FailWithMessage("uuid为必传参数", ctx)
+		return
+	}
+	// 获取Bot对象
 	bot := global.GetBot(appKey)
 
 	// 设置登录成功回调
@@ -58,14 +65,15 @@ func LoginHandle(ctx echo.Context) error {
 	// 登录
 	if err := bot.LoginWithUUID(uuid); err != nil {
 		log.Println(err)
-		return err
+		core.FailWithMessage("登录失败："+err.Error(), ctx)
+		return
 	}
 	user, err := bot.GetCurrentUser()
 	if err != nil {
-		log.Println("获取登录用户信息失败")
-		return err
+		log.Println("获取登录用户信息失败: ", err.Error())
+		core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
+		return
 	}
 	log.Println("当前登录用户：", user.NickName, user.UserName)
-
-	return core.OkWithMessage("登录成功", ctx)
+	core.OkWithMessage("登录成功", ctx)
 }

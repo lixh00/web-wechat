@@ -1,27 +1,17 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"web-wechat/core"
+	"github.com/gin-gonic/gin"
 	"web-wechat/global"
 	"web-wechat/route"
 )
 
 // 程序启动入口
 func main() {
-	app := echo.New()
+	app := gin.Default()
 
-	// 使用日志中间件
-	app.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: `${time_rfc3339} [${level}] [${remote_ip}] ${method} [${status}] ${uri}` + "\n",
-	}))
-	// 使用Gzip中间件
-	app.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Level: 5,
-	}))
 	// 定义全局异常处理
-	app.HTTPErrorHandler = core.CustomHTTPErrorHandler
+	//app.Use(core.CustomHTTPErrorHandler)
 	// 初始化路由
 	route.InitRoute(app)
 
@@ -31,5 +21,5 @@ func main() {
 	// TODO 初始化数据库连接等
 
 	// 监听端口
-	app.Logger.Fatal(app.Start(":8888"))
+	app.Run(":8888")
 }

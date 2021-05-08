@@ -3,6 +3,7 @@ module web-wechat
 go 1.15
 
 require (
+	github.com/gin-gonic/gin v1.7.1
 	github.com/labstack/echo/v4 v4.2.2
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
 	golang.org/x/net v0.0.0-20210226101413-39120d07d75e // indirect

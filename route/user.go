@@ -1,12 +1,12 @@
 package route
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 	"web-wechat/controller"
 )
 
 // initUserRoute 初始化登录路由信息
-func initUserRoute(app *echo.Echo) {
+func initUserRoute(app *gin.Engine) {
 	group := app.Group("/user")
 
 	group.GET("/info", controller.GetCurrentUserInfoHandle)
