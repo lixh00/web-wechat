@@ -56,19 +56,10 @@ func LoginHandle(ctx echo.Context) error {
 	}
 
 	// 登录
-	//hotLoginConfig := protocol.NewJsonFileHotReloadStorage("json文件路径，后面改成从Redis读取")
-	//if err := bot.HotLoginWithUUID(uuid, hotLoginConfig, true); err != nil {
 	if err := bot.LoginWithUUID(uuid); err != nil {
 		log.Println(err)
 		return err
 	}
-
-	// 阻塞主goroutine, 知道发生异常或者用户主动退出
-	//err := bot.Block()
-	//if err != nil {
-	//	log.Println("Bot异常：", err.Error())
-	//	return nil
-	//}
 	user, err := bot.GetCurrentUser()
 	if err != nil {
 		log.Println("获取登录用户信息失败")

@@ -119,6 +119,7 @@ func (b *Bot) LoginWithUUID(uuid string) error {
 		if err != nil {
 			return err
 		}
+		log.Println("CheckLogin： ", resp.Code, string(resp.Raw))
 		switch resp.Code {
 		case statusSuccess:
 			// 判断是否有登录回调，如果有执行它
@@ -132,7 +133,7 @@ func (b *Bot) LoginWithUUID(uuid string) error {
 				b.ScanCallBack(resp.Raw)
 			}
 		case statusTimeout:
-			return errors.New("login time out")
+			return errors.New("login timeout")
 		case statusWait:
 			continue
 		}
