@@ -11,4 +11,7 @@ func InitRoute(app *gin.Engine) {
 
 	// 初始化用户相关路由
 	initUserRoute(app)
+
+	// 初始化消息模块路由
+	initMessageRoute(app)
 }

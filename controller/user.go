@@ -27,12 +27,15 @@ type responseUserInfo struct {
 	RemarkName string `json:"remark_name"`
 	// 头像
 	HeadImgUrl string `json:"head_img_url"`
+	// 当前登录中用户的唯一标识
+	UserName string `json:"user_name"`
 }
 
 // 返回的好友列表的实体
 type friendsResponse struct {
 	Count   int                `json:"count"`
 	Friends []responseUserInfo `json:"friends"`
+	Groups  []responseUserInfo `json:"groups"`
 }
 
 // GetCurrentUserInfoHandle 获取当前登录用户
@@ -72,10 +75,17 @@ func GetFriendsListHandle(ctx *gin.Context) {
 		core.FailWithMessage("获取好友列表失败", ctx)
 		return
 	}
+
+	groups, err := user.Groups(true)
+	if err != nil {
+		core.FailWithMessage("获取群聊列表失败", ctx)
+		return
+	}
+
 	// 循环处理数据
-	var response []responseUserInfo
+	var friendList []responseUserInfo
 	for _, friend := range friends {
-		response = append(response, responseUserInfo{
+		friendList = append(friendList, responseUserInfo{
 			Uin:         friend.Uin,
 			Sex:         friend.Sex,
 			Province:    friend.Province,
@@ -85,8 +95,27 @@ func GetFriendsListHandle(ctx *gin.Context) {
 			NickName:    protocol.FormatEmoji(friend.NickName),
 			RemarkName:  protocol.FormatEmoji(friend.RemarkName),
 			HeadImgUrl:  friend.HeadImgUrl,
+			UserName:    friend.UserName,
 		})
 	}
+
+	// 循环处理数据
+	var groupList []responseUserInfo
+	for _, group := range groups {
+		groupList = append(groupList, responseUserInfo{
+			Uin:         group.Uin,
+			Sex:         group.Sex,
+			Province:    group.Province,
+			City:        group.City,
+			Alias:       group.Alias,
+			DisplayName: protocol.FormatEmoji(group.DisplayName),
+			NickName:    protocol.FormatEmoji(group.NickName),
+			RemarkName:  protocol.FormatEmoji(group.RemarkName),
+			HeadImgUrl:  group.HeadImgUrl,
+			UserName:    group.UserName,
+		})
+	}
+
 	// 返回给前端
-	core.OkWithData(friendsResponse{Count: friends.Count(), Friends: response}, ctx)
+	core.OkWithData(friendsResponse{Count: friends.Count(), Friends: friendList, Groups: groupList}, ctx)
 }
