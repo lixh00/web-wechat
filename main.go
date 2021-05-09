@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/protocol"
 	"web-wechat/route"
@@ -12,7 +13,7 @@ func main() {
 	app := gin.Default()
 
 	// 定义全局异常处理
-	//app.Use(core.CustomHTTPErrorHandler)
+	app.NoRoute(core.NotFoundErrorHandler())
 	// 初始化路由
 	route.InitRoute(app)
 
