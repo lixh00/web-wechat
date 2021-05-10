@@ -38,7 +38,11 @@ func InitWechatBotHandle() *protocol.Bot {
 		} else {
 			log.Println("消息发送者：", sender.NickName)
 		}
-		log.Printf("[收到新消息] 消息类型: %v ==> 内容：%v \n", msg.MsgType, msg.Content)
+		if msg.MsgType == 1 {
+			log.Printf("[收到新消息] 消息类型: %v ==> 内容：%v \n", msg.MsgType, protocol.FormatEmoji(msg.Content))
+		} else {
+			log.Printf("[收到新消息] 消息类型: %v ==> 内容：%v \n", msg.MsgType, protocol.XmlFormString(msg.Content))
+		}
 	}
 
 	return bot
