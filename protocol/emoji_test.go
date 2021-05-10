@@ -1,6 +1,8 @@
 package protocol
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestFormatEmoji(t *testing.T) {
 	t.Log(FormatEmoji(`这是一个苹果<span class="emoji emoji1f34f"></span>`))
