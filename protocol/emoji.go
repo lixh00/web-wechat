@@ -287,9 +287,6 @@ var Emoji = struct {
 
 func FormatEmoji(text string) string {
 	result := emojiRegexp.FindAllStringSubmatch(text, -1)
-	if len(result) == 0 {
-		return text
-	}
 
 	for _, item := range result {
 		if len(item) != 2 {
