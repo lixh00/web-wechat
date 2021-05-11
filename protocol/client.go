@@ -59,7 +59,9 @@ func DefaultClient(urlManager UrlManager) *Client {
 		},
 		Jar: jar,
 	}
-	return NewClient(client, urlManager)
+	c := NewClient(client, urlManager)
+	c.AddHttpHook(UserAgentHook{})
+	return c
 }
 
 func (c *Client) AddHttpHook(hooks ...HttpHook) {
@@ -77,20 +79,22 @@ func (c *Client) do(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-// Do 抽象Do方法,将所有的有效的cookie存入Client.cookies
-// 方便热登陆时获取
-func (c *Client) Do(req *http.Request) (*http.Response, error) {
-	resp, err := c.do(req)
-	if err != nil {
-		return resp, err
-	}
-	c.mu.Lock()
+func (c *Client) setCookie(resp *http.Response) {
 	defer c.mu.Unlock()
 	cookies := resp.Cookies()
 	if c.cookies == nil {
 		c.cookies = make(map[string][]*http.Cookie)
 	}
 	c.cookies[resp.Request.URL.String()] = cookies
+}
+
+// Do 抽象Do方法,将所有的有效的cookie存入Client.cookies
+// 方便热登陆时获取
+func (c *Client) Do(req *http.Request) (*http.Response, error) {
+	resp, err := c.do(req)
+	if err == nil {
+		c.setCookie(resp)
+	}
 	return resp, err
 }
 
