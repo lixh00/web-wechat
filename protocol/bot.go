@@ -379,13 +379,14 @@ func DefaultBot(modes ...mode) *Bot {
 	} else {
 		m = modes[0]
 	}
-	urlManager := GetUrlManagerByMode(m)
-	return NewBot(DefaultCaller(urlManager))
+	caller := DefaultCaller()
+	caller.Client.mode = m
+	return NewBot(caller)
 }
 
 // GetQrcodeUrl 通过uuid获取登录二维码的url
 func GetQrcodeUrl(uuid string) string {
-	return qrcodeUrl + uuid
+	return qrcode + uuid
 }
 
 // PrintlnQrcodeUrl 打印登录二维码

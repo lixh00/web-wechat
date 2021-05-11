@@ -21,7 +21,7 @@ func getSelf(modes ...mode) (*Self, error) {
 }
 
 func TestBotLogin(t *testing.T) {
-	bot := defaultBot()
+	bot := defaultBot(Desktop)
 	if err := bot.Login(); err != nil {
 		t.Error(err)
 		return
@@ -35,7 +35,7 @@ func TestBotLogin(t *testing.T) {
 }
 
 func TestMessage(t *testing.T) {
-	bot := defaultBot()
+	bot := defaultBot(Desktop)
 	bot.MessageHandler = func(msg *Message) {
 		t.Log(msg.MsgType)
 		t.Log(msg.Content)
@@ -165,7 +165,7 @@ func TestRemoveFriendIntoChatRoom(t *testing.T) {
 }
 
 func TestLogout(t *testing.T) {
-	bot := defaultBot()
+	bot := defaultBot(Desktop)
 	bot.MessageHandler = func(msg *Message) {
 		if msg.Content == "logout" {
 			msg.Bot.Logout()
@@ -179,7 +179,7 @@ func TestLogout(t *testing.T) {
 }
 
 func TestSendMessage(t *testing.T) {
-	bot := defaultBot()
+	bot := defaultBot(Desktop)
 	if err := bot.Login(); err != nil {
 		t.Error(err)
 		return
@@ -206,7 +206,7 @@ func TestSendMessage(t *testing.T) {
 }
 
 func TestAgreeFriendsAdd(t *testing.T) {
-	bot := defaultBot()
+	bot := defaultBot(Desktop)
 	bot.MessageHandler = func(msg *Message) {
 		if msg.IsFriendAdd() {
 			if err := msg.Agree(); err != nil {
