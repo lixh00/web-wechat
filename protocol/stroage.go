@@ -13,21 +13,24 @@ type Storage struct {
 	Response  *WebInitResponse
 }
 
+type HotReloadStorageItem struct {
+	Cookies      map[string][]*http.Cookie
+	BaseRequest  *BaseRequest
+	LoginInfo    *LoginInfo
+	WechatDomain *WechatDomain
+}
+
 // HotReloadStorage 热登陆存储接口
 type HotReloadStorage interface {
-	GetCookie() map[string][]*http.Cookie                                            // 获取client.cookie
-	GetBaseRequest() *BaseRequest                                                    // 获取BaseRequest
-	GetLoginInfo() *LoginInfo                                                        // 获取LoginInfo
-	Dump(cookies map[string][]*http.Cookie, req *BaseRequest, info *LoginInfo) error // 实现该方法, 将必要信息进行序列化
-	Load() error                                                                     // 实现该方法, 将存储媒介的内容反序列化
+	GetHotReloadStorageItem() HotReloadStorageItem // 获取HotReloadStorageItem
+	Dump(item HotReloadStorageItem) error          // 实现该方法, 将必要信息进行序列化
+	Load() error                                   // 实现该方法, 将存储媒介的内容反序列化
 }
 
 // JsonFileHotReloadStorage 实现HotReloadStorage接口
 // 默认以json文件的形式存储
 type JsonFileHotReloadStorage struct {
-	Cookie   map[string][]*http.Cookie
-	Req      *BaseRequest
-	Info     *LoginInfo
+	item     HotReloadStorageItem
 	filename string
 }
 
@@ -55,12 +58,9 @@ type JsonFileHotReloadStorage struct {
 //}
 
 // Dump 将信息写入Redis
-func (f *JsonFileHotReloadStorage) Dump(cookies map[string][]*http.Cookie, req *BaseRequest, info *LoginInfo) error {
-	f.Cookie = cookies
-	f.Req = req
-	f.Info = info
-
-	data, err := json.Marshal(f)
+func (f *JsonFileHotReloadStorage) Dump(item HotReloadStorageItem) error {
+	f.item = item
+	data, err := json.Marshal(f.item)
 	if err != nil {
 		log.Println("序列化微信热登录信息失败：", err.Error())
 		return err
@@ -99,23 +99,13 @@ func (f *JsonFileHotReloadStorage) Load() error {
 		return err
 	}
 	// 反序列化热登录数据
-	err = json.Unmarshal([]byte(data), f)
+	err = json.Unmarshal([]byte(data), &f.item)
 	return err
 }
 
-// GetCookie 获取Cookie
-func (f *JsonFileHotReloadStorage) GetCookie() map[string][]*http.Cookie {
-	return f.Cookie
-}
-
-// GetBaseRequest 获取BaseRequest
-func (f *JsonFileHotReloadStorage) GetBaseRequest() *BaseRequest {
-	return f.Req
-}
-
-// GetLoginInfo 获取登录信息
-func (f *JsonFileHotReloadStorage) GetLoginInfo() *LoginInfo {
-	return f.Info
+// GetHotReloadStorageItem 获取登录信息
+func (f *JsonFileHotReloadStorage) GetHotReloadStorageItem() HotReloadStorageItem {
+	return f.item
 }
 
 // NewJsonFileHotReloadStorage 新建一个JsonStorage对象

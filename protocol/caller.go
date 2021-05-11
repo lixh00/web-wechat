@@ -11,6 +11,7 @@ import (
 // 上层模块可以直接获取封装后的请求结果
 type Caller struct {
 	Client *Client
+	path   *url.URL
 }
 
 // NewCaller Constructor for Caller
@@ -75,12 +76,13 @@ func (c *Caller) GetLoginInfo(body []byte) (*LoginInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	host := path.Host
-	domain, err := getDomainByHost(host)
+
+	domain, err := getDomainByHost(path.Host)
 	if err != nil {
 		return nil, err
 	}
 	c.Client.domain = domain
+
 	resp := NewReturnResponse(c.Client.GetLoginInfo(path.String()))
 	if resp.Err() != nil {
 		return nil, resp.Err()

@@ -223,7 +223,7 @@ func TestAgreeFriendsAdd(t *testing.T) {
 }
 
 func TestHotLogin(t *testing.T) {
-	filename := "wecaht:login:oneplus1"
+	filename := "wechat:login:oneplus11"
 	InitRedisConnHandle()
 	bot := defaultBot(Desktop)
 	s := NewJsonFileHotReloadStorage(filename)

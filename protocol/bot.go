@@ -85,7 +85,8 @@ func (b *Bot) HotLogin(storage HotReloadStorage, retry ...bool) error {
 
 // 热登陆初始化
 func (b *Bot) hotLoginInit() error {
-	cookies := b.hotReloadStorage.GetCookie()
+	item := b.hotReloadStorage.GetHotReloadStorageItem()
+	cookies := item.Cookies
 	for u, ck := range cookies {
 		path, err := url.Parse(u)
 		if err != nil {
@@ -93,8 +94,9 @@ func (b *Bot) hotLoginInit() error {
 		}
 		b.Caller.Client.Jar.SetCookies(path, ck)
 	}
-	b.storage.LoginInfo = b.hotReloadStorage.GetLoginInfo()
-	b.storage.Request = b.hotReloadStorage.GetBaseRequest()
+	b.storage.LoginInfo = item.LoginInfo
+	b.storage.Request = item.BaseRequest
+	b.Caller.Client.domain = item.WechatDomain
 	return nil
 }
 
@@ -246,7 +248,13 @@ func (b *Bot) handleLogin(data []byte) error {
 	// 如果是热登陆,则将当前的重要信息写入hotReloadStorage
 	if b.isHot {
 		cookies := b.Caller.Client.GetCookieMap()
-		if err := b.hotReloadStorage.Dump(cookies, request, info); err != nil {
+		item := HotReloadStorageItem{
+			BaseRequest:  request,
+			Cookies:      cookies,
+			LoginInfo:    info,
+			WechatDomain: b.Caller.Client.domain,
+		}
+		if err := b.hotReloadStorage.Dump(item); err != nil {
 			return err
 		}
 	}
