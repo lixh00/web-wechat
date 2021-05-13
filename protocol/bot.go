@@ -8,12 +8,12 @@ import (
 )
 
 type Bot struct {
-	ScanCallBack           func(body []byte)  // 扫码回调,可获取扫码用户的头像
-	LoginCallBack          func(body []byte)  // 登陆回调
-	LogoutCallBack         func(bot *Bot)     // 退出回调
-	UUIDCallback           func(uuid string)  // 获取UUID的回调函数
-	MessageHandler         func(msg *Message) // 获取消息成功的handle
-	GetMessageErrorHandler func(err error)    // 获取消息发生错误的handle
+	ScanCallBack           func(body []byte) // 扫码回调,可获取扫码用户的头像
+	LoginCallBack          func(body []byte) // 登陆回调
+	LogoutCallBack         func(bot *Bot)    // 退出回调
+	UUIDCallback           func(uuid string) // 获取UUID的回调函数
+	MessageHandler         MessageHandler    // 获取消息成功的handle
+	GetMessageErrorHandler func(err error)   // 获取消息发生错误的handle
 	isHot                  bool
 	err                    error
 	context                context.Context
