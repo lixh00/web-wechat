@@ -29,21 +29,35 @@ func InitWechatBotHandle() *protocol.Bot {
 		log.Println("获取消息发生错误：", err.Error())
 	}
 	// 注册消息处理函数
-	bot.MessageHandler = func(msg *protocol.Message) {
-		// TODO 保存消息到数据库
-		// 取出发送者信息
-		sender, err := msg.Sender()
-		if err != nil {
-			log.Println("获取消息发送者失败", err.Error())
-		} else {
-			log.Println("消息发送者：", sender.NickName)
-		}
-		if msg.MsgType == 1 {
-			log.Printf("[收到新消息] 消息类型: %v ==> 内容：%v \n", msg.MsgType, protocol.FormatEmoji(msg.Content))
-		} else {
-			log.Printf("[收到新消息] 消息类型: %v ==> 内容：%v \n", msg.MsgType, protocol.XmlFormString(msg.Content))
-		}
-	}
-
+	wechatMessageHandle(bot)
+	// 返回机器人对象
 	return bot
+}
+
+// 微信消息处理函数
+func wechatMessageHandle(bot *protocol.Bot) {
+	dispatcher := protocol.NewMessageMatchDispatcher()
+	// 设置为异步处理
+	dispatcher.SetAsync(true)
+
+	// 处理文字消息
+	textHandle := func(ctx *protocol.MessageContext) {
+		sender, _ := ctx.Sender()
+		log.Printf("[收到新文字消息] == 发信人：%v ==> 内容：%v \n", sender.NickName, ctx.Content)
+		ctx.Next()
+	}
+	dispatcher.OnText(textHandle)
+
+	// 处理其他消息
+	otherHandle := func(ctx *protocol.MessageContext) {
+		sender, _ := ctx.Sender()
+		log.Printf("[收到新消息] 发送者：%v == 消息类型: %v ==> 内容：%v \n",
+			sender.NickName, ctx.MsgType, protocol.XmlFormString(ctx.Content))
+	}
+	dispatcher.RegisterHandler(func(message *protocol.Message) bool {
+		return !message.IsText()
+	}, otherHandle)
+
+	// 注册消息处理函数
+	bot.MessageHandler = protocol.DispatchMessage(dispatcher)
 }
