@@ -1,6 +1,7 @@
 package global
 
 import (
+	"github.com/robfig/cron"
 	"log"
 	"web-wechat/protocol"
 )
@@ -60,4 +61,27 @@ func wechatMessageHandle(bot *protocol.Bot) {
 
 	// 注册消息处理函数
 	bot.MessageHandler = protocol.DispatchMessage(dispatcher)
+}
+
+// UpdateHotLoginData 更新热登录数据
+func UpdateHotLoginData() {
+	// 创建一个新的定时任务管理器
+	c := cron.New()
+	// 添加一个每十分钟执行一次的执行器
+	_ = c.AddFunc("0 0/10 * * * ? ", func() {
+		for _, bot := range wechatBots {
+			if bot.Alive() {
+				user, _ := bot.GetCurrentUser()
+				if err := bot.DumpHotReloadStorage(); err != nil {
+					log.Printf("【%v】更新热登录数据失败 \n", user.NickName)
+				}
+				log.Printf("【%v】热登录数据更新成功 \n", user.NickName)
+			}
+			continue
+		}
+	})
+	// 新启一个协程，运行定时任务
+	go c.Start()
+	// 等待停止信号结束任务
+	defer c.Stop()
 }

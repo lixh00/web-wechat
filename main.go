@@ -23,6 +23,9 @@ func main() {
 	// 初始化Redis连接
 	protocol.InitRedisConnHandle()
 
+	// 定时更新 Bot 的热登录数据
+	global.UpdateHotLoginData()
+
 	// 监听端口
 	app.Run(":8888")
 }
