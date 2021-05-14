@@ -68,7 +68,7 @@ func UpdateHotLoginData() {
 	// 创建一个新的定时任务管理器
 	c := cron.New()
 	// 添加一个每十分钟执行一次的执行器
-	_ = c.AddFunc("0 0/10 * * * ? ", func() {
+	_ = c.AddFunc("0 0/20 * * * ? ", func() {
 		for _, bot := range wechatBots {
 			if bot.Alive() {
 				user, _ := bot.GetCurrentUser()
