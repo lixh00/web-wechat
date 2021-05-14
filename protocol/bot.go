@@ -260,14 +260,7 @@ func (b *Bot) handleLogin(data []byte) error {
 
 	// 如果是热登陆,则将当前的重要信息写入hotReloadStorage
 	if b.isHot {
-		cookies := b.Caller.Client.GetCookieMap()
-		item := HotReloadStorageItem{
-			BaseRequest:  request,
-			Cookies:      cookies,
-			LoginInfo:    info,
-			WechatDomain: b.Caller.Client.domain,
-		}
-		if err := b.hotReloadStorage.Dump(item); err != nil {
+		if err := b.DumpHotReloadStorage(); err != nil {
 			return err
 		}
 	}
@@ -382,6 +375,21 @@ func (b *Bot) MessageOnSuccess(h func(msg *Message)) {
 // MessageOnError setter for Bot.GetMessageErrorHandler
 func (b *Bot) MessageOnError(h func(err error)) {
 	b.GetMessageErrorHandler = h
+}
+
+// DumpHotReloadStorage 写入HotReloadStorage
+func (b *Bot) DumpHotReloadStorage() error {
+	if b.hotReloadStorage == nil {
+		return errors.New("hotReloadStorage can be nil")
+	}
+	cookies := b.Caller.Client.GetCookieMap()
+	item := HotReloadStorageItem{
+		BaseRequest:  b.storage.Request,
+		Cookies:      cookies,
+		LoginInfo:    b.storage.LoginInfo,
+		WechatDomain: b.Caller.Client.domain,
+	}
+	return b.hotReloadStorage.Dump(item)
 }
 
 // NewBot Bot的构造方法，需要自己传入Caller
