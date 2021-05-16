@@ -26,6 +26,9 @@ func main() {
 	// 定时更新 Bot 的热登录数据
 	global.UpdateHotLoginData()
 
+	// 保活
+	global.KeepAliveHandle()
+
 	// 监听端口
 	app.Run(":8888")
 }
