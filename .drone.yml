@@ -1,0 +1,29 @@
+kind: pipeline
+name: build
+
+steps:
+  - name: 打包Docker镜像并推送
+    image: plugins/docker
+    settings:
+      registry: registry.cn-hangzhou.aliyuncs.com
+      repo: registry.cn-hangzhou.aliyuncs.com/lixh/web-wechat
+      use_cache: true
+      username: docker@1780395505853616
+      password: l4rQkKdtIOlHKkTv
+      auto_tag: true
+    when:
+      event: push
+      branch: master
+  - name: 发送电报通知消息
+    image: appleboy/drone-telegram
+    settings:
+      token: 883905265:AAFv3NAH4ykdh2m_XiQUuyKNJ9XE5RV7ukU
+      to: 365042238
+      message: >
+        【Web微信协议】
+        {{#success build.status}}
+          第 {{build.number}} 次构建已完成，状态：构建成功
+        {{else}}
+          第 {{build.number}} 次构建已完成，状态：构建失败
+        {{/success}}
+        提交记录：{{commit.author}} - {{commit.message}}
