@@ -3,6 +3,7 @@ package protocol
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"math/rand"
 	"mime/multipart"
 	"net/http"
@@ -20,7 +21,7 @@ func ToBuffer(v interface{}) (*bytes.Buffer, error) {
 	return &buffer, err
 }
 
-// GetRandomDeviceId 获取随机设备id
+// 获取随机设备id
 func GetRandomDeviceId() string {
 	rand.Seed(time.Now().Unix())
 	var builder strings.Builder
@@ -41,7 +42,7 @@ func getWebWxDataTicket(cookies []*http.Cookie) string {
 	return ""
 }
 
-// XmlFormString Form Xml 格式化
+// Form Xml 格式化
 func XmlFormString(text string) string {
 	lt := strings.ReplaceAll(text, "&lt;", "<")
 	gt := strings.ReplaceAll(lt, "&gt;", ">")
@@ -57,7 +58,7 @@ func getTotalDuration(delay ...time.Duration) time.Duration {
 	return total
 }
 
-// GetFileContentType 获取文件上传的类型
+// 获取文件上传的类型
 func GetFileContentType(file multipart.File) (string, error) {
 	data := make([]byte, 512)
 	if _, err := file.Read(data); err != nil {
@@ -89,4 +90,20 @@ func getMessageType(filename string) string {
 		return video
 	}
 	return doc
+}
+
+func scanXml(resp *http.Response, v interface{}) error {
+	var buffer bytes.Buffer
+	if _, err := buffer.ReadFrom(resp.Body); err != nil {
+		return err
+	}
+	return xml.Unmarshal(buffer.Bytes(), v)
+}
+
+func scanJson(resp *http.Response, v interface{}) error {
+	var buffer bytes.Buffer
+	if _, err := buffer.ReadFrom(resp.Body); err != nil {
+		return err
+	}
+	return json.Unmarshal(buffer.Bytes(), v)
 }

@@ -1,42 +1,45 @@
 package protocol
 
 import (
+	"bytes"
 	"errors"
 	"net/http"
 	"net/url"
 	"os"
 )
 
-// Caller 调用请求和解析请求
+// 调用请求和解析请求
 // 上层模块可以直接获取封装后的请求结果
 type Caller struct {
 	Client *Client
 	path   *url.URL
 }
 
-// NewCaller Constructor for Caller
+// Constructor for Caller
 func NewCaller(client *Client) *Caller {
 	return &Caller{Client: client}
 }
 
-// DefaultCaller Default Constructor for Caller
+// Default Constructor for Caller
 func DefaultCaller() *Caller {
 	return NewCaller(DefaultClient())
 }
 
-// GetLoginUUID 获取登录的uuid
+// 获取登录的uuid
 func (c *Caller) GetLoginUUID() (string, error) {
-	resp := NewReturnResponse(c.Client.GetLoginUUID())
-	if resp.Err() != nil {
-		return "", resp.Err()
-	}
-	defer resp.Body.Close()
-	data, err := resp.ReadAll()
+	resp, err := c.Client.GetLoginUUID()
 	if err != nil {
 		return "", err
 	}
+
+	defer resp.Body.Close()
+
+	var buffer bytes.Buffer
+	if _, err := buffer.ReadFrom(resp.Body); err != nil {
+		return "", err
+	}
 	// 正则匹配uuid字符串
-	results := uuidRegexp.FindSubmatch(data)
+	results := uuidRegexp.FindSubmatch(buffer.Bytes())
 	if len(results) != 2 {
 		// 如果没有匹配到,可能微信的接口做了修改，或者当前机器的ip被加入了黑名单
 		return "", errors.New("uuid does not match")
@@ -44,28 +47,29 @@ func (c *Caller) GetLoginUUID() (string, error) {
 	return string(results[1]), nil
 }
 
-// CheckLogin 检查是否登录成功
+// 检查是否登录成功
 func (c *Caller) CheckLogin(uuid string) (*CheckLoginResponse, error) {
-	resp := NewReturnResponse(c.Client.CheckLogin(uuid))
-	if resp.Err() != nil {
-		return nil, resp.Err()
+	resp, err := c.Client.CheckLogin(uuid)
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
-	data, err := resp.ReadAll()
-	if err != nil {
+
+	var buffer bytes.Buffer
+	if _, err := buffer.ReadFrom(resp.Body); err != nil {
 		return nil, err
 	}
 	// 正则匹配检测的code
 	// 具体code参考global.go
-	results := statusCodeRegexp.FindSubmatch(data)
+	results := statusCodeRegexp.FindSubmatch(buffer.Bytes())
 	if len(results) != 2 {
 		return nil, errors.New("error status code match")
 	}
 	code := string(results[1])
-	return &CheckLoginResponse{Code: code, Raw: data}, nil
+	return &CheckLoginResponse{Code: code, Raw: buffer.Bytes()}, nil
 }
 
-// GetLoginInfo 获取登录信息
+// 获取登录信息
 func (c *Caller) GetLoginInfo(body []byte) (*LoginInfo, error) {
 	// 从响应体里面获取需要跳转的url
 	results := redirectUriRegexp.FindSubmatch(body)
@@ -83,18 +87,19 @@ func (c *Caller) GetLoginInfo(body []byte) (*LoginInfo, error) {
 	}
 	c.Client.domain = domain
 
-	resp := NewReturnResponse(c.Client.GetLoginInfo(path.String()))
-	if resp.Err() != nil {
-		uErr, ok := resp.Err().(*url.Error)
+	resp, err := c.Client.GetLoginInfo(path.String())
+	if err != nil {
+		uErr, ok := err.(*url.Error)
 		if ok && (uErr.Err.Error() == missLocationHeader.Error()) {
 			return nil, loginForbiddenError
 		}
-		return nil, resp.Err()
+		return nil, err
 	}
 	defer resp.Body.Close()
+
 	var loginInfo LoginInfo
 	// xml结构体序列化储存
-	if err := resp.ScanXML(&loginInfo); err != nil {
+	if err := scanXml(resp, &loginInfo); err != nil {
 		return nil, err
 	}
 	if !loginInfo.Ok() {
@@ -103,29 +108,29 @@ func (c *Caller) GetLoginInfo(body []byte) (*LoginInfo, error) {
 	return &loginInfo, nil
 }
 
-// WebInit 获取初始化信息
+// 获取初始化信息
 func (c *Caller) WebInit(request *BaseRequest) (*WebInitResponse, error) {
-	resp := NewReturnResponse(c.Client.WebInit(request))
-	if resp.Err() != nil {
-		return nil, resp.Err()
+	resp, err := c.Client.WebInit(request)
+	if err != nil {
+		return nil, err
 	}
 	var webInitResponse WebInitResponse
 	defer resp.Body.Close()
-	if err := resp.ScanJSON(&webInitResponse); err != nil {
+	if err := scanJson(resp, &webInitResponse); err != nil {
 		return nil, err
 	}
 	return &webInitResponse, nil
 }
 
-// WebWxStatusNotify 通知手机已登录
+// 通知手机已登录
 func (c *Caller) WebWxStatusNotify(request *BaseRequest, response *WebInitResponse, info *LoginInfo) error {
-	resp := NewReturnResponse(c.Client.WebWxStatusNotify(request, response, info))
-	if resp.Err() != nil {
-		return resp.Err()
+	resp, err := c.Client.WebWxStatusNotify(request, response, info)
+	if err != nil {
+		return err
 	}
 	var item struct{ BaseResponse BaseResponse }
 	defer resp.Body.Close()
-	if err := resp.ScanJSON(&item); err != nil {
+	if err := scanJson(resp, &item); err != nil {
 		return err
 	}
 	if !item.BaseResponse.Ok() {
@@ -134,18 +139,18 @@ func (c *Caller) WebWxStatusNotify(request *BaseRequest, response *WebInitRespon
 	return nil
 }
 
-// SyncCheck 异步获取是否有新的消息
+// 异步获取是否有新的消息
 func (c *Caller) SyncCheck(info *LoginInfo, response *WebInitResponse) (*SyncCheckResponse, error) {
-	resp := NewReturnResponse(c.Client.SyncCheck(info, response))
-	if resp.Err() != nil {
-		return nil, resp.Err()
-	}
-	defer resp.Body.Close()
-	data, err := resp.ReadAll()
+	resp, err := c.Client.SyncCheck(info, response)
 	if err != nil {
 		return nil, err
 	}
-	results := syncCheckRegexp.FindSubmatch(data)
+	defer resp.Body.Close()
+	var buffer bytes.Buffer
+	if _, err := buffer.ReadFrom(resp.Body); err != nil {
+		return nil, err
+	}
+	results := syncCheckRegexp.FindSubmatch(buffer.Bytes())
 	if len(results) != 3 {
 		return nil, errors.New("parse sync key failed")
 	}
@@ -154,15 +159,15 @@ func (c *Caller) SyncCheck(info *LoginInfo, response *WebInitResponse) (*SyncChe
 	return syncCheckResponse, nil
 }
 
-// WebWxGetContact 获取所有的联系人
+// 获取所有的联系人
 func (c *Caller) WebWxGetContact(info *LoginInfo) (Members, error) {
-	resp := NewReturnResponse(c.Client.WebWxGetContact(info))
-	if resp.Err() != nil {
-		return nil, resp.Err()
+	resp, err := c.Client.WebWxGetContact(info)
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
 	var item WebWxContactResponse
-	if err := resp.ScanJSON(&item); err != nil {
+	if err := scanJson(resp, &item); err != nil {
 		return nil, err
 	}
 	if !item.BaseResponse.Ok() {
@@ -171,16 +176,16 @@ func (c *Caller) WebWxGetContact(info *LoginInfo) (Members, error) {
 	return item.MemberList, nil
 }
 
-// WebWxBatchGetContact 获取联系人的详情
+// 获取联系人的详情
 // 注: Members参数的长度不要大于50
 func (c *Caller) WebWxBatchGetContact(members Members, request *BaseRequest) (Members, error) {
-	resp := NewReturnResponse(c.Client.WebWxBatchGetContact(members, request))
-	if resp.Err() != nil {
-		return nil, resp.Err()
+	resp, err := c.Client.WebWxBatchGetContact(members, request)
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
 	var item WebWxBatchContactResponse
-	if err := resp.ScanJSON(&item); err != nil {
+	if err := scanJson(resp, &item); err != nil {
 		return nil, err
 	}
 	if !item.BaseResponse.Ok() {
@@ -189,44 +194,47 @@ func (c *Caller) WebWxBatchGetContact(members Members, request *BaseRequest) (Me
 	return item.ContactList, nil
 }
 
-// WebWxSync 获取新的消息接口
+// 获取新的消息接口
 func (c *Caller) WebWxSync(request *BaseRequest, response *WebInitResponse, info *LoginInfo) (*WebWxSyncResponse, error) {
-	resp := NewReturnResponse(c.Client.WebWxSync(request, response, info))
-	if resp.Err() != nil {
-		return nil, resp.Err()
+	resp, err := c.Client.WebWxSync(request, response, info)
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
 	var webWxSyncResponse WebWxSyncResponse
-	if err := resp.ScanJSON(&webWxSyncResponse); err != nil {
+	if err := scanJson(resp, &webWxSyncResponse); err != nil {
 		return nil, err
 	}
 	return &webWxSyncResponse, nil
 }
 
-// WebWxSendMsg 发送消息接口
+// 发送消息接口
 func (c *Caller) WebWxSendMsg(msg *SendMessage, info *LoginInfo, request *BaseRequest) (*SentMessage, error) {
 	resp, err := c.Client.WebWxSendMsg(msg, info, request)
 	return getSuccessSentMessage(msg, resp, err)
 }
 
-// WebWxOplog 修改用户备注接口
+// 修改用户备注接口
 func (c *Caller) WebWxOplog(request *BaseRequest, remarkName, toUserName string) error {
-	resp := NewReturnResponse(c.Client.WebWxOplog(request, remarkName, toUserName))
+	resp, err := c.Client.WebWxOplog(request, remarkName, toUserName)
+	if err != nil {
+		return err
+	}
 	return parseBaseResponseError(resp)
 }
 
 func (c *Caller) UploadMedia(file *os.File, request *BaseRequest, info *LoginInfo, fromUserName, toUserName string) (*UploadResponse, error) {
 	// 首先尝试上传图片
-	resp := NewReturnResponse(c.Client.WebWxUploadMediaByChunk(file, request, info, fromUserName, toUserName))
+	resp, err := c.Client.WebWxUploadMediaByChunk(file, request, info, fromUserName, toUserName)
 	// 无错误上传成功之后获取请求结果，判断结果是否正常
-	if resp.Err() != nil {
-		return nil, resp.Err()
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	var item UploadResponse
 
-	if err := resp.ScanJSON(&item); err != nil {
+	if err := scanJson(resp, &item); err != nil {
 		return &item, err
 	}
 	if !item.BaseResponse.Ok() {
@@ -238,7 +246,7 @@ func (c *Caller) UploadMedia(file *os.File, request *BaseRequest, info *LoginInf
 	return &item, nil
 }
 
-// WebWxSendImageMsg 发送图片消息接口
+// 发送图片消息接口
 func (c *Caller) WebWxSendImageMsg(file *os.File, request *BaseRequest, info *LoginInfo, fromUserName, toUserName string) (*SentMessage, error) {
 	// 首先尝试上传图片
 	resp, err := c.UploadMedia(file, request, info, fromUserName, toUserName)
@@ -268,56 +276,68 @@ func (c *Caller) WebWxSendFile(file *os.File, req *BaseRequest, info *LoginInfo,
 	return c.WebWxSendAppMsg(msg, req)
 }
 
-// WebWxSendAppMsg 发送媒体消息
+// 发送媒体消息
 func (c *Caller) WebWxSendAppMsg(msg *SendMessage, req *BaseRequest) (*SentMessage, error) {
 	resp, err := c.Client.WebWxSendAppMsg(msg, req)
 	return getSuccessSentMessage(msg, resp, err)
 }
 
-// Logout 用户退出
+// 用户退出
 func (c *Caller) Logout(info *LoginInfo) error {
-	resp := NewReturnResponse(c.Client.Logout(info))
+	resp, err := c.Client.Logout(info)
+	if err != nil {
+		return err
+	}
 	return parseBaseResponseError(resp)
 }
 
-// AddFriendIntoChatRoom 拉好友入群
+// 拉好友入群
 func (c *Caller) AddFriendIntoChatRoom(req *BaseRequest, info *LoginInfo, group *Group, friends ...*Friend) error {
 	if len(friends) == 0 {
 		return errors.New("no friends found")
 	}
-	resp := NewReturnResponse(c.Client.AddMemberIntoChatRoom(req, info, group, friends...))
+	resp, err := c.Client.AddMemberIntoChatRoom(req, info, group, friends...)
+	if err != nil {
+		return err
+	}
 	return parseBaseResponseError(resp)
 }
 
-// RemoveFriendFromChatRoom 从群聊中移除用户
+// 从群聊中移除用户
 func (c *Caller) RemoveFriendFromChatRoom(req *BaseRequest, info *LoginInfo, group *Group, users ...*User) error {
 	if len(users) == 0 {
 		return errors.New("no users found")
 	}
-	resp := NewReturnResponse(c.Client.RemoveMemberFromChatRoom(req, info, group, users...))
+	resp, err := c.Client.RemoveMemberFromChatRoom(req, info, group, users...)
+	if err != nil {
+		return err
+	}
 	return parseBaseResponseError(resp)
 }
 
-// WebWxVerifyUser 同意加好友请求
+// 同意加好友请求
 func (c *Caller) WebWxVerifyUser(storage *Storage, info RecommendInfo, verifyContent string) error {
-	resp := NewReturnResponse(c.Client.WebWxVerifyUser(storage, info, verifyContent))
+	resp, err := c.Client.WebWxVerifyUser(storage, info, verifyContent)
+	if err != nil {
+		return err
+	}
 	return parseBaseResponseError(resp)
 }
 
-// WebWxRevokeMsg 撤回消息操作
+// 撤回消息操作
 func (c *Caller) WebWxRevokeMsg(msg *SentMessage, request *BaseRequest) error {
-	resp := NewReturnResponse(c.Client.WebWxRevokeMsg(msg, request))
+	resp, err := c.Client.WebWxRevokeMsg(msg, request)
+	if err != nil {
+		return err
+	}
 	return parseBaseResponseError(resp)
 }
 
 // 处理响应返回的结果是否正常
-func parseBaseResponseError(resp *ReturnResponse) error {
-	if resp.Err() != nil {
-		return resp.Err()
-	}
+func parseBaseResponseError(resp *http.Response) error {
 	defer resp.Body.Close()
 	var item struct{ BaseResponse BaseResponse }
-	if err := resp.ScanJSON(&item); err != nil {
+	if err := scanJson(resp, &item); err != nil {
 		return err
 	}
 	if !item.BaseResponse.Ok() {
@@ -326,16 +346,12 @@ func parseBaseResponseError(resp *ReturnResponse) error {
 	return nil
 }
 
-func parseMessageResponseError(resp *ReturnResponse, msg *SentMessage) error {
-	if resp.Err() != nil {
-		return resp.Err()
-	}
-
+func parseMessageResponseError(resp *http.Response, msg *SentMessage) error {
 	defer resp.Body.Close()
 
 	var messageResp MessageResponse
 
-	if err := resp.ScanJSON(&messageResp); err != nil {
+	if err := scanJson(resp, &messageResp); err != nil {
 		return err
 	}
 
@@ -348,8 +364,10 @@ func parseMessageResponseError(resp *ReturnResponse, msg *SentMessage) error {
 }
 
 func getSuccessSentMessage(msg *SendMessage, resp *http.Response, err error) (*SentMessage, error) {
-	returnResp := NewReturnResponse(resp, err)
+	if err != nil {
+		return nil, err
+	}
 	sendSuccessMsg := &SentMessage{SendMessage: msg}
-	err = parseMessageResponseError(returnResp, sendSuccessMsg)
+	err = parseMessageResponseError(resp, sendSuccessMsg)
 	return sendSuccessMsg, err
 }

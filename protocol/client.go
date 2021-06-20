@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-// HttpHook 请求上下文钩子
+// 请求上下文钩子
 type HttpHook interface {
 	BeforeRequest(req *http.Request)
 	AfterRequest(response *http.Response, err error)
@@ -34,7 +34,7 @@ func (u UserAgentHook) BeforeRequest(req *http.Request) {
 
 func (u UserAgentHook) AfterRequest(response *http.Response, err error) {}
 
-// Client http请求客户端
+// http请求客户端
 // 客户端需要维持Session会话
 // 并且客户端不允许跳转
 type Client struct {
@@ -50,7 +50,7 @@ func NewClient(client *http.Client) *Client {
 	return &Client{Client: client}
 }
 
-// DefaultClient 自动存储cookie
+// 自动存储cookie
 // 设置客户端不自动跳转
 func DefaultClient() *Client {
 	jar, _ := cookiejar.New(nil)
@@ -91,7 +91,7 @@ func (c *Client) setCookie(resp *http.Response) {
 	c.cookies[path] = cookies
 }
 
-// Do 抽象Do方法,将所有的有效的cookie存入Client.cookies
+// 抽象Do方法,将所有的有效的cookie存入Client.cookies
 // 方便热登陆时获取
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	resp, err := c.do(req)
@@ -101,12 +101,12 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-// GetCookieMap 获取当前client的所有的有效的client
+// 获取当前client的所有的有效的client
 func (c *Client) GetCookieMap() map[string][]*http.Cookie {
 	return c.cookies
 }
 
-// GetLoginUUID 获取登录的uuid
+// 获取登录的uuid
 func (c *Client) GetLoginUUID() (*http.Response, error) {
 	path, _ := url.Parse(jslogin)
 	params := url.Values{}
@@ -126,13 +126,13 @@ func (c *Client) GetLoginUUID() (*http.Response, error) {
 	return c.Do(req)
 }
 
-// GetLoginQrcode 获取登录的二维吗
+// 获取登录的二维吗
 func (c *Client) GetLoginQrcode(uuid string) (*http.Response, error) {
 	path := qrcode + uuid
 	return c.Get(path)
 }
 
-// CheckLogin 检查是否登录
+// 检查是否登录
 func (c *Client) CheckLogin(uuid string) (*http.Response, error) {
 	path, _ := url.Parse(login)
 	now := time.Now().Unix()
@@ -157,7 +157,7 @@ func (c *Client) GetLoginInfo(path string) (*http.Response, error) {
 	return c.Do(req)
 }
 
-// WebInit 请求获取初始化信息
+// 请求获取初始化信息
 func (c *Client) WebInit(request *BaseRequest) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxinit)
 	params := url.Values{}
@@ -173,7 +173,7 @@ func (c *Client) WebInit(request *BaseRequest) (*http.Response, error) {
 	return c.Do(req)
 }
 
-// WebWxStatusNotify 通知手机已登录
+// 通知手机已登录
 func (c *Client) WebWxStatusNotify(request *BaseRequest, response *WebInitResponse, info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxstatusnotify)
 	params := url.Values{}
@@ -194,7 +194,7 @@ func (c *Client) WebWxStatusNotify(request *BaseRequest, response *WebInitRespon
 	return c.Do(req)
 }
 
-// SyncCheck 异步检查是否有新的消息返回
+// 异步检查是否有新的消息返回
 func (c *Client) SyncCheck(info *LoginInfo, response *WebInitResponse) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.SyncHost + synccheck)
 	params := url.Values{}
@@ -217,7 +217,7 @@ func (c *Client) SyncCheck(info *LoginInfo, response *WebInitResponse) (*http.Re
 	return c.Do(req)
 }
 
-// WebWxGetContact 获取联系人信息
+// 获取联系人信息
 func (c *Client) WebWxGetContact(info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxgetcontact)
 	params := url.Values{}
@@ -229,7 +229,7 @@ func (c *Client) WebWxGetContact(info *LoginInfo) (*http.Response, error) {
 	return c.Do(req)
 }
 
-// WebWxBatchGetContact 获取联系人详情
+// 获取联系人详情
 func (c *Client) WebWxBatchGetContact(members Members, request *BaseRequest) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxbatchgetcontact)
 	params := url.Values{}
@@ -248,7 +248,7 @@ func (c *Client) WebWxBatchGetContact(members Members, request *BaseRequest) (*h
 	return c.Do(req)
 }
 
-// WebWxSync 获取消息接口
+// 获取消息接口
 func (c *Client) WebWxSync(request *BaseRequest, response *WebInitResponse, info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxsync)
 	params := url.Values{}
@@ -281,7 +281,7 @@ func (c *Client) sendMessage(request *BaseRequest, url string, msg *SendMessage)
 	return c.Do(req)
 }
 
-// WebWxSendMsg 发送文本消息
+// 发送文本消息
 func (c *Client) WebWxSendMsg(msg *SendMessage, info *LoginInfo, request *BaseRequest) (*http.Response, error) {
 	msg.Type = TextMessage
 	path, _ := url.Parse(c.domain.BaseHost + webwxsendmsg)
@@ -292,7 +292,7 @@ func (c *Client) WebWxSendMsg(msg *SendMessage, info *LoginInfo, request *BaseRe
 	return c.sendMessage(request, path.String(), msg)
 }
 
-// WebWxGetHeadImg 获取用户的头像
+// 获取用户的头像
 func (c *Client) WebWxGetHeadImg(headImageUrl string) (*http.Response, error) {
 	path := c.domain.BaseHost + headImageUrl
 	req, _ := http.NewRequest(http.MethodGet, path, nil)
@@ -383,6 +383,11 @@ func (c *Client) WebWxUploadMediaByChunk(file *os.File, request *BaseRequest, in
 	if chunks > 1 {
 		content["chunks"] = strconv.FormatInt(chunks, 10)
 	}
+
+	if _, err = file.Seek(0, 0); err != nil {
+		return nil, err
+	}
+
 	// 分块上传
 	for chunk := 0; int64(chunk) < chunks; chunk++ {
 
@@ -427,11 +432,12 @@ func (c *Client) WebWxUploadMediaByChunk(file *os.File, request *BaseRequest, in
 		req.Header.Set("Content-Type", ct)
 		// 发送数据
 		resp, err = c.Do(req)
-
+		if err != nil {
+			return nil, err
+		}
 		// 如果不是最后一次, 解析有没有错误
 		if !isLastTime {
-			returnResp := NewReturnResponse(resp, err)
-			if err := parseBaseResponseError(returnResp); err != nil {
+			if err := parseBaseResponseError(resp); err != nil {
 				return nil, err
 			}
 		}
@@ -440,7 +446,7 @@ func (c *Client) WebWxUploadMediaByChunk(file *os.File, request *BaseRequest, in
 	return resp, err
 }
 
-// WebWxSendMsgImg 发送图片
+// 发送图片
 // 这个接口依赖上传文件的接口
 // 发送的图片必须是已经成功上传的图片
 func (c *Client) WebWxSendMsgImg(msg *SendMessage, request *BaseRequest, info *LoginInfo) (*http.Response, error) {
@@ -455,7 +461,7 @@ func (c *Client) WebWxSendMsgImg(msg *SendMessage, request *BaseRequest, info *L
 	return c.sendMessage(request, path.String(), msg)
 }
 
-// WebWxSendAppMsg 发送文件信息
+// 发送文件信息
 func (c *Client) WebWxSendAppMsg(msg *SendMessage, request *BaseRequest) (*http.Response, error) {
 	msg.Type = AppMessage
 	path, _ := url.Parse(c.domain.BaseHost + webwxsendappmsg)
@@ -466,7 +472,7 @@ func (c *Client) WebWxSendAppMsg(msg *SendMessage, request *BaseRequest) (*http.
 	return c.sendMessage(request, path.String(), msg)
 }
 
-// WebWxOplog 用户重命名接口
+// 用户重命名接口
 func (c *Client) WebWxOplog(request *BaseRequest, remarkName, userName string) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxoplog)
 	params := url.Values{}
@@ -484,7 +490,7 @@ func (c *Client) WebWxOplog(request *BaseRequest, remarkName, userName string) (
 	return c.Do(req)
 }
 
-// WebWxVerifyUser 添加用户为好友接口
+// 添加用户为好友接口
 func (c *Client) WebWxVerifyUser(storage *Storage, info RecommendInfo, verifyContent string) (*http.Response, error) {
 	loginInfo := storage.LoginInfo
 	path, _ := url.Parse(c.domain.BaseHost + webwxverifyuser)
@@ -512,7 +518,7 @@ func (c *Client) WebWxVerifyUser(storage *Storage, info RecommendInfo, verifyCon
 	return c.Do(req)
 }
 
-// WebWxGetMsgImg 获取图片消息的图片响应
+// 获取图片消息的图片响应
 func (c *Client) WebWxGetMsgImg(msg *Message, info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxgetmsgimg)
 	params := url.Values{}
@@ -524,7 +530,7 @@ func (c *Client) WebWxGetMsgImg(msg *Message, info *LoginInfo) (*http.Response, 
 	return c.Do(req)
 }
 
-// WebWxGetVoice 获取语音消息的语音响应
+// 获取语音消息的语音响应
 func (c *Client) WebWxGetVoice(msg *Message, info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxgetvoice)
 	params := url.Values{}
@@ -535,7 +541,7 @@ func (c *Client) WebWxGetVoice(msg *Message, info *LoginInfo) (*http.Response, e
 	return c.Do(req)
 }
 
-// WebWxGetVideo 获取视频消息的视频响应
+// 获取视频消息的视频响应
 func (c *Client) WebWxGetVideo(msg *Message, info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxgetvideo)
 	params := url.Values{}
@@ -546,7 +552,7 @@ func (c *Client) WebWxGetVideo(msg *Message, info *LoginInfo) (*http.Response, e
 	return c.Do(req)
 }
 
-// WebWxGetMedia 获取文件消息的文件响应
+// 获取文件消息的文件响应
 func (c *Client) WebWxGetMedia(msg *Message, info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.FileHost + webwxgetmedia)
 	params := url.Values{}
@@ -561,7 +567,7 @@ func (c *Client) WebWxGetMedia(msg *Message, info *LoginInfo) (*http.Response, e
 	return c.Do(req)
 }
 
-// Logout 用户退出
+// 用户退出
 func (c *Client) Logout(info *LoginInfo) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxlogout)
 	params := url.Values{}
@@ -573,7 +579,7 @@ func (c *Client) Logout(info *LoginInfo) (*http.Response, error) {
 	return c.Do(req)
 }
 
-// AddMemberIntoChatRoom 添加用户进群聊
+// 添加用户进群聊
 func (c *Client) AddMemberIntoChatRoom(req *BaseRequest, info *LoginInfo, group *Group, friends ...*Friend) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxupdatechatroom)
 	params := url.Values{}
@@ -596,7 +602,7 @@ func (c *Client) AddMemberIntoChatRoom(req *BaseRequest, info *LoginInfo, group 
 	return c.Do(requ)
 }
 
-// RemoveMemberFromChatRoom 从群聊中移除用户
+// 从群聊中移除用户
 func (c *Client) RemoveMemberFromChatRoom(req *BaseRequest, info *LoginInfo, group *Group, friends ...*User) (*http.Response, error) {
 	path, _ := url.Parse(c.domain.BaseHost + webwxupdatechatroom)
 	params := url.Values{}
@@ -618,7 +624,7 @@ func (c *Client) RemoveMemberFromChatRoom(req *BaseRequest, info *LoginInfo, gro
 	return c.Do(requ)
 }
 
-// WebWxRevokeMsg 撤回消息
+// 撤回消息
 func (c *Client) WebWxRevokeMsg(msg *SentMessage, request *BaseRequest) (*http.Response, error) {
 	content := map[string]interface{}{
 		"BaseRequest": request,
