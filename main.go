@@ -26,6 +26,9 @@ func main() {
 	// 初始化Redis连接
 	protocol.InitRedisConnHandle()
 
+	// 初始化Redis里登录的数据
+	global.InitBotWithStart()
+
 	// 定时更新 Bot 的热登录数据
 	global.UpdateHotLoginData()
 

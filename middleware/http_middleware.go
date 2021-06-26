@@ -16,6 +16,7 @@ func CheckAppKeyMiddleware() gin.HandlerFunc {
 			core.FailWithMessage("AppKey为必传参数", ctx)
 			ctx.Abort()
 		}
+		// TODO 从数据库判断AppKey是否存在
 		// 如果不是登录请求，判断AppKey是否有效
 		if !strings.Contains(ctx.Request.RequestURI, "login") {
 			if err := global.CheckBot(appKey); err != nil {

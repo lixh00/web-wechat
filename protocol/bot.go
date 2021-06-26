@@ -142,19 +142,6 @@ func (b *Bot) LoginWithUUID(uuid string) error {
 	}
 }
 
-// SyncHotLoginData TODO 同步热登录缓存数据
-func (b *Bot) SyncHotLoginData() error {
-	//info := b.storage.LoginInfo
-	//// 构建BaseRequest
-	//request := &BaseRequest{
-	//	Uin:      info.WxUin,
-	//	Sid:      info.WxSid,
-	//	Skey:     info.SKey,
-	//	DeviceID: GetRandomDeviceId(),
-	//}
-	return nil
-}
-
 // HotLoginWithUUID 根据UUID热登录
 func (b *Bot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retry ...bool) error {
 	b.isHot = true

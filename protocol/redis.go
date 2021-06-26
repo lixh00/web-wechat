@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// Redis连接对象
-var redisConn redis.Conn
+// RedisConn Redis连接对象
+var RedisConn redis.Conn
 
 // InitRedisConnHandle 初始化Redis连接对象
 func InitRedisConnHandle() {
@@ -29,7 +29,7 @@ func InitRedisConnHandle() {
 		fmt.Println("Redis初始化连接失败: ", err.Error())
 		os.Exit(1)
 	} else {
-		redisConn = conn
+		RedisConn = conn
 	}
 
 	//defer c.Close()
@@ -37,12 +37,12 @@ func InitRedisConnHandle() {
 
 // 获取数据
 func get(key string) (string, error) {
-	return redis.String(redisConn.Do("get", key))
+	return redis.String(RedisConn.Do("get", key))
 }
 
 // 保存数据
 func set(key string, value string) error {
-	_, err := redisConn.Do("set", key, value)
+	_, err := RedisConn.Do("set", key, value)
 	if err != nil {
 		return errors.New("Redis保存数据失败")
 	}
@@ -51,7 +51,7 @@ func set(key string, value string) error {
 
 // 保存带过期时间的数据(单位：秒)
 func setWithTimeout(key string, value string, timeout string) error {
-	_, err := redisConn.Do("set", key, value, "EX", timeout)
+	_, err := RedisConn.Do("set", key, value, "EX", timeout)
 	if err != nil {
 		return errors.New("Redis保存数据失败")
 	}
