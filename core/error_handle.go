@@ -12,7 +12,7 @@ func CustomHTTPErrorHandler() gin.HandlerFunc {
 	//_ = FailWithMessage(err.Error(), ctx)
 	return func(ctx *gin.Context) {
 		FailWithMessage("不知道出了啥异常", ctx)
-		ctx.Next()
+		ctx.Abort()
 	}
 }
 
@@ -20,6 +20,6 @@ func CustomHTTPErrorHandler() gin.HandlerFunc {
 func NotFoundErrorHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		FailWithMessage("错误路径", ctx)
-		ctx.Next()
+		ctx.Abort()
 	}
 }
