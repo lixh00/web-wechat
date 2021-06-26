@@ -13,13 +13,13 @@ func InitWechatBotsMap() {
 }
 
 // GetBot 获取Bot对象
-func GetBot(uuid string) *protocol.Bot {
-	return wechatBots[uuid]
+func GetBot(appKey string) *protocol.Bot {
+	return wechatBots[appKey]
 }
 
 // SetBot 保存Bot对象
-func SetBot(uuid string, bot *protocol.Bot) {
-	wechatBots[uuid] = bot
+func SetBot(appKey string, bot *protocol.Bot) {
+	wechatBots[appKey] = bot
 }
 
 // CheckBot 预检AppKey是否存在登录记录且登录状态是否正常
@@ -110,16 +110,34 @@ func KeepAliveHandle() {
 	c := cron.New()
 	// 添加一个每小时执行一次的执行器
 	_ = c.AddFunc("0 0/30 * * * ? ", func() {
-		for _, bot := range wechatBots {
+		var errKey []string
+		for k, bot := range wechatBots {
 			if bot.Alive() {
 				user, _ := bot.GetCurrentUser()
 				file, _ := user.FileHelper()
 				if _, err := file.SendText("芜湖"); err != nil {
 					log.Printf("【%v】保活失败 \n", user.NickName)
+					errKey = append(errKey, k)
 				}
 				log.Printf("【%v】保活成功 \n", user.NickName)
 			}
 			continue
+		}
+		// 清理掉无效的登录实例
+		for _, key := range errKey {
+			// 取出热登录信息登录一次，如果登录失败就删除实例
+			bot := GetBot(key)
+			storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + key)
+			if err := bot.HotLogin(storage, false); err != nil {
+				log.Printf("[%v] 热登录失败，错误信息：%v\n", key, err.Error())
+				// 登录失败，删除热登录数据
+				if _, err := protocol.RedisConn.Do("DEL", key); err != nil {
+					log.Printf("[%v] Redis缓存删除失败，错误信息：%v\n", key, err.Error())
+				}
+				delete(wechatBots, key)
+			}
+			// 登录成功，更新实例
+			SetBot(key, bot)
 		}
 	})
 	// 新启一个协程，运行定时任务

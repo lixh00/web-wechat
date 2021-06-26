@@ -66,7 +66,8 @@ func (f *JsonFileHotReloadStorage) Dump(item HotReloadStorageItem) error {
 		return err
 	}
 	// 保存信息到Redis
-	err = set(f.filename, string(data))
+	//err = set(f.filename, string(data))
+	err = setWithTimeout(f.filename, string(data), "86400")
 	if err != nil {
 		log.Println("保存微信热登录信息失败：", err.Error())
 		return err
