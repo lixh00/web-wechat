@@ -40,12 +40,8 @@ type friendsResponse struct {
 
 // GetCurrentUserInfoHandle 获取当前登录用户
 func GetCurrentUserInfoHandle(ctx *gin.Context) {
-	// 预检AppKey
+	// 获取AppKey
 	appKey := ctx.Request.Header.Get("AppKey")
-	if err := checkBot(appKey); err != nil {
-		core.FailWithMessage("AppKey预检失败："+err.Error(), ctx)
-		return
-	}
 	bot := global.GetBot(appKey)
 	// 获取登录用户信息
 	user, err := bot.GetCurrentUser()
@@ -61,12 +57,9 @@ func GetCurrentUserInfoHandle(ctx *gin.Context) {
 
 // GetFriendsListHandle 获取好友列表
 func GetFriendsListHandle(ctx *gin.Context) {
-	// 预检AppKey
+	// 获取AppKey
 	appKey := ctx.Request.Header.Get("AppKey")
-	if err := checkBot(appKey); err != nil {
-		core.FailWithMessage("AppKey预检失败："+err.Error(), ctx)
-		return
-	}
+
 	bot := global.GetBot(appKey)
 	// 获取好友列表
 	user, _ := bot.GetCurrentUser()

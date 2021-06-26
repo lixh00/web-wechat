@@ -24,12 +24,9 @@ func SendMessageToUser(ctx *gin.Context) {
 		core.FailWithMessage("参数获取失败", ctx)
 		return
 	}
-	// 预检AppKey
+	// 获取AppKey
 	appKey := ctx.Request.Header.Get("AppKey")
-	if err := checkBot(appKey); err != nil {
-		core.FailWithMessage("AppKey预检失败："+err.Error(), ctx)
-		return
-	}
+
 	bot := global.GetBot(appKey)
 	// 获取登录用户
 	self, _ := bot.GetCurrentUser()
@@ -59,12 +56,9 @@ func SendMessageToGroup(ctx *gin.Context) {
 		core.FailWithMessage("参数获取失败", ctx)
 		return
 	}
-	// 预检AppKey
+	// 获取AppKey
 	appKey := ctx.Request.Header.Get("AppKey")
-	if err := checkBot(appKey); err != nil {
-		core.FailWithMessage("AppKey预检失败："+err.Error(), ctx)
-		return
-	}
+
 	bot := global.GetBot(appKey)
 	// 获取登录用户
 	self, _ := bot.GetCurrentUser()

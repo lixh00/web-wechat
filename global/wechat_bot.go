@@ -1,6 +1,7 @@
 package global
 
 import (
+	"errors"
 	"github.com/robfig/cron"
 	"log"
 	"web-wechat/protocol"
@@ -19,6 +20,20 @@ func GetBot(uuid string) *protocol.Bot {
 // SetBot 保存Bot对象
 func SetBot(uuid string, bot *protocol.Bot) {
 	wechatBots[uuid] = bot
+}
+
+// CheckBot 预检AppKey是否存在登录记录且登录状态是否正常
+func CheckBot(appKey string) error {
+	// 判断指定AppKey是不是有登录信息
+	bot := GetBot(appKey)
+	if nil == bot {
+		return errors.New("未获取到登录记录")
+	}
+	// 判断在线状态是否正常
+	if !bot.Alive() {
+		return errors.New("微信在线状态异常，请重新登录")
+	}
+	return nil
 }
 
 // InitWechatBotHandle 初始化微信机器人
@@ -94,7 +109,7 @@ func KeepAliveHandle() {
 	// 创建一个新的定时任务管理器
 	c := cron.New()
 	// 添加一个每小时执行一次的执行器
-	_ = c.AddFunc("0 0 * * * ? ", func() {
+	_ = c.AddFunc("0 0/30 * * * ? ", func() {
 		for _, bot := range wechatBots {
 			if bot.Alive() {
 				user, _ := bot.GetCurrentUser()

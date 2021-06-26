@@ -17,10 +17,6 @@ type loginUrlResponse struct {
 // GetLoginUrlHandle 获取登录扫码连接
 func GetLoginUrlHandle(ctx *gin.Context) {
 	appKey := ctx.Request.Header.Get("AppKey")
-	if len(appKey) < 1 {
-		core.FailWithMessage("AppKey为必传参数", ctx)
-		return
-	}
 
 	// 获取一个微信机器人对象
 	bot := global.InitWechatBotHandle()
@@ -47,10 +43,6 @@ func GetLoginUrlHandle(ctx *gin.Context) {
 func LoginHandle(ctx *gin.Context) {
 	appKey := ctx.Request.Header.Get("AppKey")
 	uuid := ctx.Query("uuid")
-	if len(appKey) < 1 {
-		core.FailWithMessage("AppKey为必传参数", ctx)
-		return
-	}
 	if len(uuid) < 1 {
 		core.FailWithMessage("uuid为必传参数", ctx)
 		return

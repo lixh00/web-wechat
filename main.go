@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"web-wechat/core"
 	"web-wechat/global"
+	"web-wechat/middleware"
 	"web-wechat/protocol"
 	"web-wechat/route"
 )
@@ -14,6 +15,8 @@ func main() {
 
 	// 定义全局异常处理
 	app.NoRoute(core.NotFoundErrorHandler())
+	// AppKey预检
+	app.Use(middleware.CheckAppKeyMiddleware())
 	// 初始化路由
 	route.InitRoute(app)
 
