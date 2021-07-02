@@ -46,6 +46,8 @@ func InitWechatBotHandle() *protocol.Bot {
 	}
 	// 注册消息处理函数
 	wechatMessageHandle(bot)
+	// 获取消息发生错误
+	//bot.MessageOnError()
 	// 返回机器人对象
 	return bot
 }
@@ -108,13 +110,17 @@ func UpdateHotLoginData() {
 func KeepAliveHandle() {
 	// 创建一个新的定时任务管理器
 	c := cron.New()
-	// 添加一个每小时执行一次的执行器
+	// 添加一个每半小时执行一次的执行器
 	_ = c.AddFunc("0 0/30 * * * ? ", func() {
 		var errKey []string
 		for k, bot := range wechatBots {
 			if bot.Alive() {
 				user, _ := bot.GetCurrentUser()
-				file, _ := user.FileHelper()
+				file, err := user.FileHelper()
+				if err != nil {
+					log.Println("获取文件助手失败")
+					continue
+				}
 				if _, err := file.SendText("芜湖"); err != nil {
 					log.Printf("【%v】保活失败 \n", user.NickName)
 					errKey = append(errKey, k)
