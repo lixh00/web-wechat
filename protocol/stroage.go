@@ -17,7 +17,7 @@ type HotReloadStorageItem struct {
 	Cookies      map[string][]*http.Cookie
 	BaseRequest  *BaseRequest
 	LoginInfo    *LoginInfo
-	WechatDomain *WechatDomain
+	WechatDomain WechatDomain
 }
 
 // HotReloadStorage 热登陆存储接口
