@@ -118,12 +118,13 @@ func KeepAliveHandle() {
 				user, _ := bot.GetCurrentUser()
 				file, err := user.FileHelper()
 				if err != nil {
-					log.Println("获取文件助手失败")
+					log.Printf("获取文件助手失败 ====> %v", err.Error())
 					continue
 				}
 				if _, err := file.SendText("芜湖"); err != nil {
-					log.Printf("【%v】保活失败 \n", user.NickName)
+					log.Printf("【%v】保活失败 ====> %v \n", user.NickName, err.Error())
 					errKey = append(errKey, k)
+					continue
 				}
 				log.Printf("【%v】保活成功 \n", user.NickName)
 			}
@@ -141,9 +142,10 @@ func KeepAliveHandle() {
 					log.Printf("[%v] Redis缓存删除失败，错误信息：%v\n", key, err.Error())
 				}
 				delete(wechatBots, key)
+			} else {
+				// 登录成功，更新实例
+				SetBot(key, bot)
 			}
-			// 登录成功，更新实例
-			SetBot(key, bot)
 		}
 	})
 	// 新启一个协程，运行定时任务
