@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/robfig/cron"
 	"log"
+	"sync/atomic"
 	"web-wechat/protocol"
 )
 
@@ -41,8 +42,14 @@ func InitWechatBotHandle() *protocol.Bot {
 	bot := protocol.DefaultBot(protocol.Desktop)
 
 	// 定义读取消息错误回调函数
+	var getMessageErrorCount int32
 	bot.GetMessageErrorHandler = func(err error) {
-		log.Println("获取消息发生错误：", err.Error())
+		atomic.AddInt32(&getMessageErrorCount, 1)
+		// 如果发生了三次错误,那么直接退出
+		if getMessageErrorCount == 3 {
+			log.Println("获取消息发生错误达到三次，直接退出。错误信息：", err.Error())
+			_ = bot.Logout()
+		}
 	}
 	// 注册消息处理函数
 	wechatMessageHandle(bot)

@@ -40,6 +40,28 @@ const (
 	AppMessage   = 6
 )
 
+// https://res.wx.qq.com/a/wx_fed/webwx/res/static/js/index_c7d281c.js
+// varcaser.Caser{
+//		From: varcaser.ScreamingSnakeCase, To: varcaser.UpperCamelCaseKeepCaps}
+const (
+	MsgTypeText              = 1     // 文本消息
+	MsgTypeImage             = 3     // 图片消息
+	MsgTypeVoice             = 34    // 语音消息
+	MsgTypeVerifyMsg         = 37    // 认证消息
+	MsgTypePossibleFriendMsg = 40    // 好友推荐消息
+	MsgTypeShareCard         = 42    // 名片消息
+	MsgTypeVideo             = 43    // 视频消息
+	MsgTypeEmoticon          = 47    // 表情消息
+	MsgTypeLocation          = 48    // 地理位置消息
+	MsgTypeApp               = 49    // APP消息
+	MsgTypeVoipMsg           = 50    // voip msg	//VOIP消息
+	MsgTypeVoipNotify        = 52    // voip 结束消息
+	MsgTypeVoipInvite        = 53    // voip 邀请
+	MsgTypeMicroVideo        = 62    // 小视频消息
+	MsgTypeSys               = 10000 // 系统消息
+	MsgTypeRecalled          = 10002 // 消息撤回
+)
+
 // 登录状态
 const (
 	statusSuccess = "200"
