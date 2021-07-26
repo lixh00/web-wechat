@@ -9,7 +9,7 @@ import (
 
 // InitBotWithStart 系统启动的时候从Redis加载登录信息自动登录
 func InitBotWithStart() {
-	keys, err := db.GetRedisKeys("")
+	keys, err := db.GetRedisKeys("wechat:login:*")
 	if err != nil {
 		log.Println("获取Key失败")
 		return
