@@ -30,6 +30,8 @@ type responseUserInfo struct {
 	HeadImgUrl string `json:"head_img_url"`
 	// 当前登录中用户的唯一标识
 	UserName string `json:"user_name"`
+	// 群成员(群独有)
+	Members []*protocol.User
 }
 
 // 返回的好友列表的实体
@@ -96,6 +98,8 @@ func GetFriendsListHandle(ctx *gin.Context) {
 	// 循环处理数据
 	var groupList []responseUserInfo
 	for _, group := range groups {
+		// 取出群成员
+		members, _ := group.Members()
 		groupList = append(groupList, responseUserInfo{
 			Uin:         group.Uin,
 			Sex:         group.Sex,
@@ -107,6 +111,7 @@ func GetFriendsListHandle(ctx *gin.Context) {
 			RemarkName:  protocol.FormatEmoji(group.RemarkName),
 			HeadImgUrl:  group.HeadImgUrl,
 			UserName:    group.UserName,
+			Members:     members,
 		})
 	}
 
