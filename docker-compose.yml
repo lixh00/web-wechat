@@ -1,0 +1,14 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    restart: always
+    container_name: wechat_redis
+    ports:
+      - 16379:6379
+  api:
+    image: registry.cn-hangzhou.aliyuncs.com/lixh/web-wechat
+    restart: always
+    container_name: wechat_api
+    ports:
+      - 18888:8888

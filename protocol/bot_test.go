@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 	"time"
+	"web-wechat/db"
 )
 
 func defaultBot(modes ...mode) *Bot {
@@ -224,7 +225,7 @@ func TestAgreeFriendsAdd(t *testing.T) {
 
 func TestHotLogin(t *testing.T) {
 	filename := "wechat:login:oneplus11"
-	InitRedisConnHandle()
+	db.InitRedisConnHandle()
 	bot := defaultBot(Desktop)
 	s := NewJsonFileHotReloadStorage(filename)
 	if err := bot.HotLogin(s); err != nil {

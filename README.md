@@ -16,3 +16,10 @@ go build main.go
 # 清理无用mod引用
 go mod tidy
 ```
+
+## Docker一键运行
+```shell
+docker compose up -d
+# 或者
+docker-compose up -d
+```

@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"web-wechat/core"
+	"web-wechat/db"
 	"web-wechat/global"
 	"web-wechat/middleware"
-	"web-wechat/protocol"
 	"web-wechat/route"
 )
 
@@ -24,7 +24,7 @@ func main() {
 	global.InitWechatBotsMap()
 
 	// 初始化Redis连接
-	protocol.InitRedisConnHandle()
+	db.InitRedisConnHandle()
 
 	// 初始化Redis里登录的数据
 	global.InitBotWithStart()

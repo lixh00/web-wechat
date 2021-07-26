@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"web-wechat/db"
 )
 
 // Storage 身份信息, 维持整个登陆的Session会话
@@ -67,7 +68,7 @@ func (f *JsonFileHotReloadStorage) Dump(item HotReloadStorageItem) error {
 	}
 	// 保存信息到Redis
 	//err = set(f.filename, string(data))
-	err = setWithTimeout(f.filename, string(data), "86400")
+	err = db.SetRedisWithTimeout(f.filename, string(data), "86400")
 	if err != nil {
 		log.Println("保存微信热登录信息失败：", err.Error())
 		return err
@@ -94,7 +95,7 @@ func (f *JsonFileHotReloadStorage) Dump(item HotReloadStorageItem) error {
 // Load 从Redis读取信息
 func (f *JsonFileHotReloadStorage) Load() error {
 	// 从Redis获取热登录数据
-	data, err := get(f.filename)
+	data, err := db.GetRedis(f.filename)
 	if err != nil {
 		log.Println("读取微信热登录数据失败：", err.Error())
 		return err

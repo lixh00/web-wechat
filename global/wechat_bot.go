@@ -5,6 +5,7 @@ import (
 	"github.com/robfig/cron"
 	"log"
 	"sync/atomic"
+	"web-wechat/db"
 	"web-wechat/protocol"
 )
 
@@ -145,7 +146,7 @@ func KeepAliveHandle() {
 			if err := bot.HotLogin(storage, false); err != nil {
 				log.Printf("[%v] 热登录失败，错误信息：%v\n", key, err.Error())
 				// 登录失败，删除热登录数据
-				if _, err := protocol.RedisConn.Do("DEL", key); err != nil {
+				if err := db.DelRedis(key); err != nil {
 					log.Printf("[%v] Redis缓存删除失败，错误信息：%v\n", key, err.Error())
 				}
 				delete(wechatBots, key)
