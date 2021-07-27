@@ -2,7 +2,6 @@ package protocol
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/url"
 	"web-wechat/logger"
@@ -329,8 +328,8 @@ func (b *Bot) getNewWechatMessage() error {
 	b.storage.Response.SyncKey = resp.SyncKey
 	// 遍历所有的新的消息，依次处理
 	for _, message := range resp.AddMsgList {
-		msgStr, _ := json.Marshal(message)
-		logger.Log.Debugf("收到新消息：%v", string(msgStr))
+		//msgStr, _ := json.Marshal(message)
+		//logger.Log.Debugf("收到新消息: %v", string(msgStr))
 
 		// 根据不同的消息类型来进行处理，方便后续统一调用
 		message.init(b)
