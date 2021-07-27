@@ -31,7 +31,7 @@ type responseUserInfo struct {
 	// 当前登录中用户的唯一标识
 	UserName string `json:"user_name"`
 	// 群成员(群独有)
-	Members []*protocol.User
+	Members []*protocol.User `json:"members"`
 }
 
 // 返回的好友列表的实体
