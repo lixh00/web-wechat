@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 	"web-wechat/core"
 	"web-wechat/global"
+	"web-wechat/logger"
 	"web-wechat/protocol"
 )
 
@@ -56,13 +56,13 @@ func LoginHandle(ctx *gin.Context) {
 
 	// 设置登录成功回调
 	bot.LoginCallBack = func(body []byte) {
-		log.Println("登录成功")
+		logger.Log.Info("登录成功")
 	}
 
 	// 热登录
 	storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
 	if err := bot.HotLoginWithUUID(uuid, storage, true); err != nil {
-		log.Println(err)
+		logger.Log.Errorf("热登录失败: %v", err)
 		core.FailWithMessage("登录失败："+err.Error(), ctx)
 		return
 	}
@@ -74,10 +74,10 @@ func LoginHandle(ctx *gin.Context) {
 	//}
 	user, err := bot.GetCurrentUser()
 	if err != nil {
-		log.Println("获取登录用户信息失败: ", err.Error())
+		logger.Log.Errorf("获取登录用户信息失败: %v", err.Error())
 		core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
 		return
 	}
-	log.Println("当前登录用户：", user.NickName)
+	logger.Log.Infof("当前登录用户：%v", user.NickName)
 	core.OkWithMessage("登录成功", ctx)
 }

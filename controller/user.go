@@ -2,10 +2,10 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 	"strconv"
 	"web-wechat/core"
 	"web-wechat/global"
+	"web-wechat/logger"
 	"web-wechat/protocol"
 )
 
@@ -53,7 +53,7 @@ func GetCurrentUserInfoHandle(ctx *gin.Context) {
 		return
 	}
 
-	log.Println("登录用户：", user.NickName)
+	logger.Log.Infof("登录用户：%v", user.NickName)
 	// TODO 这儿的返回数据后面改成struct
 	core.OkWithData(map[string]string{"nickName": user.NickName, "nin": strconv.Itoa(user.Uin)}, ctx)
 }

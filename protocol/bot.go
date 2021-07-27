@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/url"
+	"web-wechat/logger"
 )
 
 type Bot struct {
@@ -120,7 +120,7 @@ func (b *Bot) LoginWithUUID(uuid string) error {
 		if err != nil {
 			return err
 		}
-		log.Println("CheckLogin： ", resp.Code, string(resp.Raw))
+		logger.Log.Infof("CheckLogin: %v ==> %v", resp.Code, string(resp.Raw))
 		switch resp.Code {
 		case statusSuccess:
 			// 判断是否有登录回调，如果有执行它
@@ -316,7 +316,7 @@ func (b *Bot) stopAsyncCALL(err error) {
 	b.cancel()
 	b.err = err
 	b.self = nil
-	log.Printf("exit with : %s", err.Error())
+	logger.Log.Errorf("exit with : %s", err.Error())
 }
 
 // 获取新的消息
@@ -330,7 +330,7 @@ func (b *Bot) getNewWechatMessage() error {
 	// 遍历所有的新的消息，依次处理
 	for _, message := range resp.AddMsgList {
 		msgStr, _ := json.Marshal(message)
-		log.Printf("收到新消息：%v\n", string(msgStr))
+		logger.Log.Debugf("收到新消息：%v", string(msgStr))
 
 		// 根据不同的消息类型来进行处理，方便后续统一调用
 		message.init(b)
@@ -426,5 +426,5 @@ func GetQrcodeUrl(uuid string) string {
 func PrintlnQrcodeUrl(uuid string) {
 	//println("访问下面网址扫描二维码登录")
 	//println(GetQrcodeUrl(uuid))
-	log.Println("请打开后面的网址扫码登录：", GetQrcodeUrl(uuid))
+	logger.Log.Debugf("请打开后面的网址扫码登录：%s", GetQrcodeUrl(uuid))
 }

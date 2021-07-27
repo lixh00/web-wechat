@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 	"web-wechat/core"
+	"web-wechat/logger"
 )
 
 // RedisConn Redis连接对象
@@ -30,7 +31,7 @@ func InitRedisConnHandle() {
 		redis.DialWriteTimeout(1*time.Second))
 
 	if err != nil {
-		fmt.Println("Redis初始化连接失败: ", err.Error())
+		logger.Log.Errorf("Redis初始化连接失败: %v", err.Error())
 		os.Exit(1)
 	} else {
 		redisConn = conn

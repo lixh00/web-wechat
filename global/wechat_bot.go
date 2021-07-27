@@ -3,9 +3,9 @@ package global
 import (
 	"errors"
 	"github.com/robfig/cron"
-	"log"
 	"sync/atomic"
 	"web-wechat/db"
+	"web-wechat/logger"
 	"web-wechat/protocol"
 )
 
@@ -48,7 +48,7 @@ func InitWechatBotHandle() *protocol.Bot {
 		atomic.AddInt32(&getMessageErrorCount, 1)
 		// 如果发生了三次错误,那么直接退出
 		if getMessageErrorCount == 3 {
-			log.Println("获取消息发生错误达到三次，直接退出。错误信息：", err.Error())
+			logger.Log.Errorf("获取消息发生错误达到三次，直接退出。错误信息：%v", err.Error())
 			_ = bot.Logout()
 		}
 	}
@@ -70,7 +70,7 @@ func wechatMessageHandle(bot *protocol.Bot) {
 	textHandle := func(ctx *protocol.MessageContext) {
 		if !ctx.IsSendBySelf() {
 			sender, _ := ctx.Sender()
-			log.Printf("[收到新文字消息] == 发信人：%v ==> 内容：%v \n", sender.NickName, ctx.Content)
+			logger.Log.Infof("[收到新文字消息] == 发信人：%v ==> 内容：%v", sender.NickName, ctx.Content)
 		}
 		ctx.Next()
 	}
@@ -79,7 +79,7 @@ func wechatMessageHandle(bot *protocol.Bot) {
 	// 处理其他消息
 	otherHandle := func(ctx *protocol.MessageContext) {
 		sender, _ := ctx.Sender()
-		log.Printf("[收到新消息] 发送者：%v == 消息类型: %v ==> 内容：%v \n",
+		logger.Log.Infof("[收到新消息] 发送者：%v == 消息类型: %v ==> 内容：%v",
 			sender.NickName, ctx.MsgType, protocol.XmlFormString(ctx.Content))
 	}
 	dispatcher.RegisterHandler(func(message *protocol.Message) bool {
@@ -101,9 +101,9 @@ func UpdateHotLoginData() {
 			if bot.Alive() {
 				user, _ := bot.GetCurrentUser()
 				if err := bot.DumpHotReloadStorage(); err != nil {
-					log.Printf("【%v】更新热登录数据失败 \n", user.NickName)
+					logger.Log.Errorf("【%v】更新热登录数据失败", user.NickName)
 				}
-				log.Printf("【%v】热登录数据更新成功 \n", user.NickName)
+				logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
 			}
 			continue
 		}
@@ -126,15 +126,15 @@ func KeepAliveHandle() {
 				user, _ := bot.GetCurrentUser()
 				file, err := user.FileHelper()
 				if err != nil {
-					log.Printf("获取文件助手失败 ====> %v", err.Error())
+					logger.Log.Errorf("获取文件助手失败 ====> %v", err.Error())
 					continue
 				}
 				if _, err := file.SendText("芜湖"); err != nil {
-					log.Printf("【%v】保活失败 ====> %v \n", user.NickName, err.Error())
+					logger.Log.Errorf("【%v】保活失败 ====> %v", user.NickName, err.Error())
 					errKey = append(errKey, k)
 					continue
 				}
-				log.Printf("【%v】保活成功 \n", user.NickName)
+				logger.Log.Infof("【%v】保活成功", user.NickName)
 			}
 			continue
 		}
@@ -144,10 +144,10 @@ func KeepAliveHandle() {
 			bot := GetBot(key)
 			storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + key)
 			if err := bot.HotLogin(storage, false); err != nil {
-				log.Printf("[%v] 热登录失败，错误信息：%v\n", key, err.Error())
+				logger.Log.Errorf("[%v] 热登录失败，错误信息：%v", key, err.Error())
 				// 登录失败，删除热登录数据
 				if err := db.DelRedis(key); err != nil {
-					log.Printf("[%v] Redis缓存删除失败，错误信息：%v\n", key, err.Error())
+					logger.Log.Errorf("[%v] Redis缓存删除失败，错误信息：%v", key, err.Error())
 				}
 				delete(wechatBots, key)
 			} else {

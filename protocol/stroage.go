@@ -2,9 +2,9 @@ package protocol
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"web-wechat/db"
+	"web-wechat/logger"
 )
 
 // Storage 身份信息, 维持整个登陆的Session会话
@@ -63,14 +63,14 @@ func (f *JsonFileHotReloadStorage) Dump(item HotReloadStorageItem) error {
 	f.item = item
 	data, err := json.Marshal(f.item)
 	if err != nil {
-		log.Println("序列化微信热登录信息失败：", err.Error())
+		logger.Log.Errorf("序列化微信热登录信息失败: %v", err.Error())
 		return err
 	}
 	// 保存信息到Redis
 	//err = set(f.filename, string(data))
 	err = db.SetRedisWithTimeout(f.filename, string(data), "86400")
 	if err != nil {
-		log.Println("保存微信热登录信息失败：", err.Error())
+		logger.Log.Errorf("保存微信热登录信息失败: %v", err.Error())
 		return err
 	}
 	return nil
@@ -97,7 +97,7 @@ func (f *JsonFileHotReloadStorage) Load() error {
 	// 从Redis获取热登录数据
 	data, err := db.GetRedis(f.filename)
 	if err != nil {
-		log.Println("读取微信热登录数据失败：", err.Error())
+		logger.Log.Errorf("读取微信热登录数据失败: %v", err.Error())
 		return err
 	}
 	// 反序列化热登录数据
