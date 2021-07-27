@@ -22,11 +22,14 @@ func InitLogger() {
 
 	// 格式相关的配置
 	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = customTimeEncoder            // 修改时间戳的格式
-	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder // 日志级别使用大写显示
+	// 修改时间戳的格式
+	encoderConfig.EncodeTime = customTimeEncoder
+	// 日志级别使用大写带颜色显示
+	encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
-
-	core := zapcore.NewCore(encoder, writer, zapcore.DebugLevel) // 将日志级别设置为 DEBUG
-	logger := zap.New(core, zap.AddCaller())                     // 增加 caller 信息
+	// 将日志级别设置为 DEBUG
+	core := zapcore.NewCore(encoder, writer, zapcore.DebugLevel)
+	// 增加 caller 信息
+	logger := zap.New(core, zap.AddCaller())
 	Log = logger.Sugar()
 }
