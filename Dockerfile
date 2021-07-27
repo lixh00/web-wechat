@@ -15,5 +15,6 @@ RUN ls -lh && chmod +x ./wechat
 FROM golang:alpine as runner
 MAINTAINER LiXunHuan(lxh@cxh.cn)
 WORKDIR /app
+ENV TZ=Asia/Shanghai
 COPY --from=builder /builder/wechat ./wechat
 CMD ./wechat
