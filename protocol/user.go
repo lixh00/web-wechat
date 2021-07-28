@@ -92,6 +92,9 @@ func (u *User) Detail() (*User, error) {
 	}
 	user := newMembers.First()
 	user.Self = u.Self
+	// 处理昵称和备注的Emoji
+	user.NickName = FormatEmoji(user.NickName)
+	user.RemarkName = FormatEmoji(user.RemarkName)
 	return user, nil
 }
 

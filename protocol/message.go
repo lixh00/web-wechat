@@ -82,7 +82,11 @@ func (m *Message) SenderInGroup() (*User, error) {
 	if users == nil {
 		return nil, noSuchUserFoundError
 	}
-	return users.First(), nil
+	sendUser := users.First()
+	// 处理Emoji
+	sendUser.NickName = FormatEmoji(sendUser.NickName)
+	sendUser.RemarkName = FormatEmoji(sendUser.RemarkName)
+	return sendUser, nil
 }
 
 // Receiver 获取消息的接收者
@@ -335,6 +339,9 @@ func (m *Message) init(bot *Bot) {
 	{
 		m.Content = strings.Replace(m.Content, `<br/>`, "\n", -1)
 	}
+
+	// 处理消息正文里面的Emoji
+	m.Content = FormatEmoji(m.Content)
 }
 
 // SendMessage 发送消息的结构体
