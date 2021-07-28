@@ -138,7 +138,7 @@ func KeepAliveHandle() {
 					logger.Log.Errorf("获取文件助手失败 ====> %v", err.Error())
 					continue
 				}
-				if _, err := file.SendText("芜湖"); err != nil {
+				if _, err := file.SendText(protocol.ZombieText); err != nil {
 					logger.Log.Errorf("【%v】保活失败 ====> %v", user.NickName, err.Error())
 					errKey = append(errKey, k)
 					continue
