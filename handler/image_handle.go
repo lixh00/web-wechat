@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"web-wechat/logger"
+	"web-wechat/oss"
 	"web-wechat/protocol"
 )
 
@@ -27,9 +28,9 @@ type ImageMessageData struct {
 		CdnHdHeight    string `xml:"cdnhdheight,attr"`
 		CdnHdWidth     string `xml:"cdnhdwidth,attr"`
 		CdnMidImgUrl   string `xml:"cdnmidimgurl,attr"`
-		Length         string `xml:"length,attr"`
+		Length         int64  `xml:"length,attr"`
 		CdnBigImgUrl   string `xml:"cdnbigimgurl,attr"`
-		HdLength       string `xml:"hdlength,attr"`
+		HdLength       int64  `xml:"hdlength,attr"`
 		Md5            string `xml:"md5,attr"`
 	} `xml:"img"`
 }
@@ -60,11 +61,16 @@ func imageMessageHandle(ctx *protocol.MessageContext) {
 		if err != nil {
 			logger.Log.Errorf("图片读取错误: %v", err.Error())
 		} else {
-			fileType := strings.Split(http.DetectContentType(imgFileByte), "/")[1]
+			contentType := http.DetectContentType(imgFileByte)
+			fileType := strings.Split(contentType, "/")[1]
 			logger.Log.Debugf("文件类型: %v", fileType)
-			//fileName := fmt.Sprintf("D:\\runtime\\images\\%v.%v", uuid.Must(uuid.NewV4(), nil), fileType)
-			//_ = ioutil.WriteFile(fileName, imgFileByte, 0644)
-			logger.Log.Info("图片保存成功")
+			fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
+			flag := oss.SaveToOss(fileResp.Body, contentType, fileName, data.Img.HdLength)
+			if flag {
+				logger.Log.Info("图片保存成功")
+			} else {
+				logger.Log.Error("图片保存失败")
+			}
 		}
 	}
 	ctx.Next()

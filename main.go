@@ -7,6 +7,7 @@ import (
 	"web-wechat/global"
 	"web-wechat/logger"
 	"web-wechat/middleware"
+	"web-wechat/oss"
 	"web-wechat/route"
 )
 
@@ -14,6 +15,8 @@ import (
 func main() {
 	// 初始化日志
 	logger.InitLogger()
+	// 初始化OSS
+	oss.InitOssConnHandle()
 	// 初始化Gin
 	app := gin.Default()
 
