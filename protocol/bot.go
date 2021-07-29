@@ -119,7 +119,7 @@ func (b *Bot) LoginWithUUID(uuid string) error {
 		if err != nil {
 			return err
 		}
-		logger.Log.Infof("CheckLogin: %v ==> %v", resp.Code, string(resp.Raw))
+		//logger.Log.Infof("CheckLogin: %v ==> %v", resp.Code, string(resp.Raw))
 		switch resp.Code {
 		case statusSuccess:
 			// 判断是否有登录回调，如果有执行它

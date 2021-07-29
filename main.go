@@ -37,8 +37,8 @@ func main() {
 	global.UpdateHotLoginData()
 
 	// 保活
-	global.KeepAliveHandle()
+	//global.KeepAliveHandle()
 
 	// 监听端口
-	app.Run(":8888")
+	_ = app.Run(":8888")
 }

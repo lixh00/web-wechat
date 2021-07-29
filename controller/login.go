@@ -54,9 +54,21 @@ func LoginHandle(ctx *gin.Context) {
 		global.SetBot(appKey, bot)
 	}
 
+	// 已扫码回调
+	bot.ScanCallBack = func(body []byte) {
+		logger.Log.Infof("[%v]已扫码", appKey)
+	}
+
 	// 设置登录成功回调
 	bot.LoginCallBack = func(body []byte) {
-		logger.Log.Info("登录成功")
+		logger.Log.Infof("[%v]登录成功", appKey)
+		user, err := bot.GetCurrentUser()
+		if err != nil {
+			logger.Log.Errorf("获取登录用户信息失败: %v", err.Error())
+			core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
+			return
+		}
+		logger.Log.Infof("当前登录用户：%v", user.NickName)
 	}
 
 	// 热登录
@@ -72,12 +84,6 @@ func LoginHandle(ctx *gin.Context) {
 	//	core.FailWithMessage("登录失败："+err.Error(), ctx)
 	//	return
 	//}
-	user, err := bot.GetCurrentUser()
-	if err != nil {
-		logger.Log.Errorf("获取登录用户信息失败: %v", err.Error())
-		core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
-		return
-	}
-	logger.Log.Infof("当前登录用户：%v", user.NickName)
+
 	core.OkWithMessage("登录成功", ctx)
 }
