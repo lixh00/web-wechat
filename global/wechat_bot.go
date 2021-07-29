@@ -110,7 +110,7 @@ func UpdateHotLoginData() {
 				if err := bot.DumpHotReloadStorage(); err != nil {
 					logger.Log.Errorf("【%v】更新热登录数据失败", user.NickName)
 				}
-				logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
+				//logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
 			}
 			continue
 		}
