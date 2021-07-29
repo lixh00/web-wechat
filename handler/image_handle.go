@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -62,11 +63,14 @@ func imageMessageHandle(ctx *protocol.MessageContext) {
 		if err != nil {
 			logger.Log.Errorf("图片读取错误: %v", err.Error())
 		} else {
+			// 读取文件相关信息
 			contentType := http.DetectContentType(imgFileByte)
 			fileType := strings.Split(contentType, "/")[1]
 			logger.Log.Debugf("文件类型: %v", fileType)
 			fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
-			flag := oss.SaveToOss(fileResp.Body, contentType, fileName)
+			// 上传文件
+			reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
+			flag := oss.SaveToOss(reader2, contentType, fileName)
 			if flag {
 				fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
 				logger.Log.Infof("图片保存成功，图片链接: %v", fileUrl)
