@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"web-wechat/core"
 	"web-wechat/logger"
 	"web-wechat/oss"
 	"web-wechat/protocol"
@@ -65,9 +66,10 @@ func imageMessageHandle(ctx *protocol.MessageContext) {
 			fileType := strings.Split(contentType, "/")[1]
 			logger.Log.Debugf("文件类型: %v", fileType)
 			fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
-			flag := oss.SaveToOss(fileResp.Body, contentType, fileName, data.Img.HdLength)
+			flag := oss.SaveToOss(fileResp.Body, contentType, fileName)
 			if flag {
-				logger.Log.Info("图片保存成功")
+				fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
+				logger.Log.Infof("图片保存成功，图片链接: %v", fileUrl)
 			} else {
 				logger.Log.Error("图片保存失败")
 			}
