@@ -5,6 +5,7 @@ import (
 	"github.com/robfig/cron"
 	"sync/atomic"
 	"web-wechat/db"
+	"web-wechat/handler"
 	"web-wechat/logger"
 	"web-wechat/protocol"
 )
@@ -53,49 +54,11 @@ func InitWechatBotHandle() *protocol.Bot {
 		}
 	}
 	// 注册消息处理函数
-	wechatMessageHandle(bot)
+	handler.HandleMessage(bot)
 	// 获取消息发生错误
 	//bot.MessageOnError()
 	// 返回机器人对象
 	return bot
-}
-
-// 微信消息处理函数
-func wechatMessageHandle(bot *protocol.Bot) {
-	dispatcher := protocol.NewMessageMatchDispatcher()
-	// 设置为异步处理
-	dispatcher.SetAsync(true)
-
-	// 处理文字消息
-	textHandle := func(ctx *protocol.MessageContext) {
-		if !ctx.IsSendBySelf() {
-			sender, _ := ctx.Sender()
-			if ctx.IsSendByGroup() {
-				// 取出消息在群里面的发送者
-				senderInGroup, _ := ctx.SenderInGroup()
-				logger.Log.Infof("[群聊][收到新文字消息] == 发信人：%v[%v] ==> 内容：%v", sender.NickName,
-					senderInGroup.NickName, ctx.Content)
-			} else {
-				logger.Log.Infof("[好友][收到新文字消息] == 发信人：%v ==> 内容：%v", sender.NickName, ctx.Content)
-			}
-		}
-		ctx.Next()
-	}
-	dispatcher.OnText(textHandle)
-
-	// 处理其他消息
-	otherHandle := func(ctx *protocol.MessageContext) {
-		sender, _ := ctx.Sender()
-		logger.Log.Infof("[收到新消息] 发送者：%v == 消息类型: %v ==> 内容：%v",
-			sender.NickName, ctx.MsgType, protocol.XmlFormString(ctx.Content))
-	}
-	dispatcher.RegisterHandler(func(message *protocol.Message) bool {
-		// 处理除文字消息和通知消息之外，并且不是自己发送的消息
-		return !message.IsText() && !message.IsNotify() && !message.IsSendBySelf()
-	}, otherHandle)
-
-	// 注册消息处理函数
-	bot.MessageHandler = protocol.DispatchMessage(dispatcher)
 }
 
 // UpdateHotLoginData 更新热登录数据

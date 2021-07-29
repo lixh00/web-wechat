@@ -152,49 +152,74 @@ func (m *Message) ReplyFile(file *os.File) (*SentMessage, error) {
 	return m.Bot.Caller.WebWxSendFile(file, request, info, m.Bot.self.UserName, m.FromUserName)
 }
 
+// IsText 是否为文本消息
 func (m *Message) IsText() bool {
-	return m.MsgType == 1 && m.Url == ""
+	return m.MsgType == MsgTypeText && m.Url == ""
 }
 
+// IsMap 是否为地图
 func (m *Message) IsMap() bool {
-	return m.MsgType == 1 && m.Url != ""
+	return m.MsgType == MsgTypeText && m.Url != ""
 }
 
+// IsPicture 是否为图片消息
 func (m *Message) IsPicture() bool {
-	return m.MsgType == 3 || m.MsgType == 47
+	return m.MsgType == MsgTypeImage
 }
 
+// IsEmoticon 是否为表情包消息
+func (m *Message) IsEmoticon() bool {
+	return m.MsgType == MsgTypeEmoticon
+}
+
+// IsVoice 是否为语音消息
 func (m *Message) IsVoice() bool {
-	return m.MsgType == 34
+	return m.MsgType == MsgTypeVoice
 }
 
+// IsFriendAdd 是否为添加好友请求
 func (m *Message) IsFriendAdd() bool {
-	return m.MsgType == 37 && m.FromUserName == "fmessage"
+	return m.MsgType == MsgTypeVerifyMsg && m.FromUserName == "fmessage"
 }
 
+// IsCard 是否为名片
 func (m *Message) IsCard() bool {
-	return m.MsgType == 42
+	return m.MsgType == MsgTypeShareCard
 }
 
+// IsLocation 是否为地理位置
+func (m *Message) IsLocation() bool {
+	return m.MsgType == MsgTypeLocation
+}
+
+// IsPossibleFriendMsg 是否为好友推荐
+func (m *Message) IsPossibleFriendMsg() bool {
+	return m.MsgType == MsgTypePossibleFriendMsg
+}
+
+// IsVideo 是否为小视频
 func (m *Message) IsVideo() bool {
-	return m.MsgType == 43 || m.MsgType == 62
+	return m.MsgType == MsgTypeVideo || m.MsgType == MsgTypeMicroVideo
 }
 
+// IsMedia 是否为APP消息
 func (m *Message) IsMedia() bool {
-	return m.MsgType == 49
+	return m.MsgType == MsgTypeApp
 }
 
 // IsRecalled 判断是否撤回
 func (m *Message) IsRecalled() bool {
-	return m.MsgType == 10002
+	return m.MsgType == MsgTypeRecalled
 }
 
+// IsSystem 是否为系统消息
 func (m *Message) IsSystem() bool {
-	return m.MsgType == 10000
+	return m.MsgType == MsgTypeSys
 }
 
+// IsNotify 是否为通知消息
 func (m *Message) IsNotify() bool {
-	return m.MsgType == 51 && m.StatusNotifyCode != 0
+	return m.MsgType == MsgTypeNotify && m.StatusNotifyCode != 0
 }
 
 // IsTransferAccounts 判断当前的消息是不是微信转账
@@ -212,6 +237,7 @@ func (m *Message) IsReceiveRedPacket() bool {
 	return m.IsSystem() && m.Content == "收到红包，请在手机上查看"
 }
 
+// IsSysNotice 是否为系统通知
 func (m *Message) IsSysNotice() bool {
 	return m.MsgType == 9999
 }

@@ -113,6 +113,11 @@ func (m *MessageMatchDispatcher) OnImage(handlers ...MessageContextHandler) {
 	m.RegisterHandler(func(message *Message) bool { return message.IsPicture() }, handlers...)
 }
 
+// OnEmoticon 注册处理消息类型为Emoticon的处理函数(表情包)
+func (m *MessageMatchDispatcher) OnEmoticon(handlers ...MessageContextHandler) {
+	m.RegisterHandler(func(message *Message) bool { return message.IsEmoticon() }, handlers...)
+}
+
 // OnVoice 注册处理消息类型为Voice的处理函数
 func (m *MessageMatchDispatcher) OnVoice(handlers ...MessageContextHandler) {
 	m.RegisterHandler(func(message *Message) bool { return message.IsVoice() }, handlers...)

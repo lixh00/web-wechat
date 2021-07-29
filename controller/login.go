@@ -62,13 +62,6 @@ func LoginHandle(ctx *gin.Context) {
 	// 设置登录成功回调
 	bot.LoginCallBack = func(body []byte) {
 		logger.Log.Infof("[%v]登录成功", appKey)
-		user, err := bot.GetCurrentUser()
-		if err != nil {
-			logger.Log.Errorf("获取登录用户信息失败: %v", err.Error())
-			core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
-			return
-		}
-		logger.Log.Infof("当前登录用户：%v", user.NickName)
 	}
 
 	// 热登录
@@ -78,12 +71,13 @@ func LoginHandle(ctx *gin.Context) {
 		core.FailWithMessage("登录失败："+err.Error(), ctx)
 		return
 	}
-	// 冷登录
-	//if err := bot.LoginWithUUID(uuid); err != nil {
-	//	log.Println(err)
-	//	core.FailWithMessage("登录失败："+err.Error(), ctx)
-	//	return
-	//}
 
+	user, err := bot.GetCurrentUser()
+	if err != nil {
+		logger.Log.Errorf("获取登录用户信息失败: %v", err.Error())
+		core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
+		return
+	}
+	logger.Log.Infof("当前登录用户：%v", user.NickName)
 	core.OkWithMessage("登录成功", ctx)
 }

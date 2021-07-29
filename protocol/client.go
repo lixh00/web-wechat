@@ -524,7 +524,8 @@ func (c *Client) WebWxGetMsgImg(msg *Message, info *LoginInfo) (*http.Response, 
 	params := url.Values{}
 	params.Add("MsgID", msg.MsgId)
 	params.Add("skey", info.SKey)
-	params.Add("type", "slave")
+	// 是否获取原图参数，不传就是原图
+	// params.Add("type", "slave")
 	path.RawQuery = params.Encode()
 	req, _ := http.NewRequest(http.MethodGet, path.String(), nil)
 	return c.Do(req)

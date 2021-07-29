@@ -55,6 +55,7 @@ const (
 	MsgTypeLocation          = 48    // 地理位置消息
 	MsgTypeApp               = 49    // APP消息
 	MsgTypeVoipMsg           = 50    // voip msg	//VOIP消息
+	MsgTypeNotify            = 51    // Notify
 	MsgTypeVoipNotify        = 52    // voip 结束消息
 	MsgTypeVoipInvite        = 53    // voip 邀请
 	MsgTypeMicroVideo        = 62    // 小视频消息
