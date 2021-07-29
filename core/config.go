@@ -8,32 +8,32 @@ import (
 var (
 	RedisConfig redisConfig
 	MySQLConfig mysqlConfig
+	OssConfig   ossConfig
 )
 
 // Redis配置
 type redisConfig struct {
-	// Redis主机
-	Host string
-	// Redis端口
-	Port string
-	// Redis密码
-	Password string
-	// Redis库
-	Db int
+	Host     string // Redis主机
+	Port     string // Redis端口
+	Password string // Redis密码
+	Db       int    // Redis库
 }
 
 // MySQL配置
 type mysqlConfig struct {
-	// 主机
-	Host string
-	// 端口
-	Port string
-	// 用户名
-	Username string
-	// 密码
-	Password string
-	// 数据库名称
-	DbName string
+	Host     string // 主机
+	Port     string // 端口
+	Username string // 用户名
+	Password string // 密码
+	DbName   string // 数据库名称
+}
+
+type ossConfig struct {
+	Endpoint        string // 接口地址
+	AccessKeyID     string // 账号
+	SecretAccessKey string // 密码
+	BucketName      string // 桶名称
+	UseSsl          bool   // 是否使用SSL
 }
 
 // InitRedisConfig 初始化Redis配置
@@ -52,5 +52,22 @@ func InitRedisConfig() {
 		Port:     port,
 		Password: password,
 		Db:       db,
+	}
+}
+
+// InitOssConfig 初始化OSS配置
+func InitOssConfig() {
+	endpoint := utils.GetEnvVal("OSS_ENDPOINT", "wechat_oss")
+	accessKeyID := utils.GetEnvVal("OSS_KEY", "minio")
+	secretAccessKey := utils.GetEnvVal("OSS_SECRET", "minio")
+	bucketName := utils.GetEnvVal("OSS_BUCKET", "wechat")
+	useSSL := utils.GetEnvBoolVal("OSS_SSL", true)
+
+	OssConfig = ossConfig{
+		Endpoint:        endpoint,
+		AccessKeyID:     accessKeyID,
+		SecretAccessKey: secretAccessKey,
+		BucketName:      bucketName,
+		UseSsl:          useSSL,
 	}
 }

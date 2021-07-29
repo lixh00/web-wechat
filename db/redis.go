@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"os"
 	"time"
 	"web-wechat/core"
 	"web-wechat/logger"
@@ -29,11 +28,11 @@ func InitRedisConnHandle() {
 		redis.DialConnectTimeout(5*time.Second),
 		redis.DialReadTimeout(1*time.Second),
 		redis.DialWriteTimeout(1*time.Second))
-
 	if err != nil {
-		logger.Log.Errorf("Redis初始化连接失败: %v", err.Error())
-		os.Exit(1)
+		logger.Log.Panicf("Redis初始化连接失败: %v", err.Error())
+		//os.Exit(1)
 	} else {
+		logger.Log.Info("Redis连接初始化成功")
 		redisConn = conn
 	}
 
