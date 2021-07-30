@@ -103,10 +103,6 @@ func appMessageHandle(ctx *protocol.MessageContext) {
 		} else {
 			// 读取文件相关信息
 			contentType := http.DetectContentType(imgFileByte)
-			//fileType := strings.Split(contentType, "/")[1]
-			//if tt == "6" {
-			//	fileType = data.Appmsg.Appattach.Fileext
-			//}
 			fileName := fmt.Sprintf("%v_%v", ctx.MsgId, data.Appmsg.Title)
 			// 上传文件(reader2解决上传空文件的BUG,因为http.Response.Body只允许读一次)
 			reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
