@@ -65,7 +65,7 @@ func emoticonMessageHandle(ctx *protocol.MessageContext) {
 	}
 
 	// 判断消息是不是表情商店的，如果是，不支持解析
-	if strings.Contains(ctx.Content, "<msg>") {
+	if !strings.Contains(ctx.Content, "<msg>") {
 		logger.Log.Debugf("原始数据: %v", ctx.Content)
 		logger.Log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：「收到了一个表情，请在手机上查看」", senderUser)
 	} else {
@@ -74,17 +74,20 @@ func emoticonMessageHandle(ctx *protocol.MessageContext) {
 		if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 			logger.Log.Errorf("消息解析失败: %v", err.Error())
 			logger.Log.Debugf("原始内容: %v", protocol.XmlFormString(ctx.Content))
+			return
 		} else {
 			logger.Log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：%v", senderUser, data.Emoji.Md5)
 			// 下载图片资源
 			fileResp, err := ctx.GetFile()
 			if err != nil {
 				logger.Log.Errorf("表情包下载失败: %v", err.Error())
+				return
 			}
 			defer fileResp.Body.Close()
 			imgFileByte, err := ioutil.ReadAll(fileResp.Body)
 			if err != nil {
 				logger.Log.Errorf("表情包读取错误: %v", err.Error())
+				return
 			} else {
 				// 读取文件相关信息
 				contentType := http.DetectContentType(imgFileByte)
@@ -102,4 +105,5 @@ func emoticonMessageHandle(ctx *protocol.MessageContext) {
 			}
 		}
 	}
+	ctx.Next()
 }
