@@ -26,3 +26,16 @@ func GetEnvIntVal(key string, defaultVal int) int {
 	}
 	return val
 }
+
+// GetEnvBoolVal 从环境变量获取数字类型值
+func GetEnvBoolVal(key string, defaultVal bool) bool {
+	valStr, exist := os.LookupEnv(key)
+	if !exist {
+		return defaultVal
+	}
+	val, err := strconv.ParseBool(valStr)
+	if err != nil {
+		return defaultVal
+	}
+	return val
+}
