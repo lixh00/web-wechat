@@ -65,15 +65,20 @@ func InitWechatBotHandle() *protocol.Bot {
 func UpdateHotLoginData() {
 	// 创建一个新的定时任务管理器
 	c := cron.New()
-	// 添加一个每五分钟执行一次的执行器
-	_ = c.AddFunc("0 0/5 * * * ? ", func() {
-		for _, bot := range wechatBots {
+	// 添加一个每三十分钟执行一次的执行器
+	_ = c.AddFunc("0 0/30 * * * ? ", func() {
+		for key, bot := range wechatBots {
 			if bot.Alive() {
+				storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + key)
+				if err := bot.HotLogin(storage, false); err != nil {
+					logger.Log.Errorf("定时热登录失败: %v", err)
+					continue
+				}
 				user, _ := bot.GetCurrentUser()
 				if err := bot.DumpHotReloadStorage(); err != nil {
 					logger.Log.Errorf("【%v】更新热登录数据失败", user.NickName)
 				}
-				//logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
+				logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
 			}
 			continue
 		}
