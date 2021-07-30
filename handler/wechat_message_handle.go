@@ -12,6 +12,8 @@ func HandleMessage(bot *protocol.Bot) {
 	dispatcher.OnText(textMessageHandle)
 	// 注册图片消息处理器
 	dispatcher.OnImage(imageMessageHandle)
+	// 注册表情包消息处理器
+	dispatcher.OnEmoticon(emoticonMessageHandle)
 	// 未定义消息处理
 	dispatcher.RegisterHandler(checkIsOther, otherMessageHandle)
 

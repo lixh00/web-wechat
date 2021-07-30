@@ -257,7 +257,7 @@ func (m *Message) GetFile() (*http.Response, error) {
 	if !m.HasFile() {
 		return nil, errors.New("invalid message type")
 	}
-	if m.IsPicture() {
+	if m.IsPicture() || m.IsEmoticon() {
 		return m.Bot.Caller.Client.WebWxGetMsgImg(m, m.Bot.storage.LoginInfo)
 	}
 	if m.IsVoice() {

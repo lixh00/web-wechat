@@ -13,7 +13,7 @@ import (
 	"web-wechat/protocol"
 )
 
-// ImageMessageData 图片消息实体
+// ImageMessageData 图片消息结构体
 type ImageMessageData struct {
 	XMLName xml.Name `xml:"msg"`
 	Img     struct {
@@ -66,7 +66,6 @@ func imageMessageHandle(ctx *protocol.MessageContext) {
 			// 读取文件相关信息
 			contentType := http.DetectContentType(imgFileByte)
 			fileType := strings.Split(contentType, "/")[1]
-			logger.Log.Debugf("文件类型: %v", fileType)
 			fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
 			// 上传文件
 			reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))

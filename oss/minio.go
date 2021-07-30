@@ -47,12 +47,13 @@ func InitOssConnHandle() {
 
 // SaveToOss 保存文件到OSS
 func SaveToOss(b io.Reader, contentType, fileName string) bool {
+	logger.Log.Debugf("开始上传文件: %v", fileName)
 	ctx := context.Background()
 	_, err := minioClient.PutObject(ctx, core.OssConfig.BucketName, fileName, b, -1, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		logger.Log.Errorf("文件上传错误: %v", err)
 		return false
 	}
-	//logger.Log.Infof("上传文件返回: %v", n)
+	logger.Log.Debugf("文件上传完毕: %v", fileName)
 	return true
 }
