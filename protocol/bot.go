@@ -330,6 +330,7 @@ func (b *Bot) getNewWechatMessage() error {
 	for _, message := range resp.AddMsgList {
 		//msgStr, _ := json.Marshal(message)
 		//logger.Log.Debugf("收到新消息,消息类型: %v\n%v", message.MsgType, string(msgStr))
+		logger.Log.Debugf("收到新消息,消息类型: %v", message.MsgType)
 
 		// 根据不同的消息类型来进行处理，方便后续统一调用
 		message.init(b)
