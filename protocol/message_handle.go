@@ -133,6 +133,11 @@ func (m *MessageMatchDispatcher) OnCard(handlers ...MessageContextHandler) {
 	m.RegisterHandler(func(message *Message) bool { return message.IsCard() }, handlers...)
 }
 
+// OnMedia 注册处理消息类型为Card的处理函数
+func (m *MessageMatchDispatcher) OnMedia(handlers ...MessageContextHandler) {
+	m.RegisterHandler(func(message *Message) bool { return message.IsMedia() }, handlers...)
+}
+
 // OnFriendByNickName 注册根据好友昵称是否匹配的消息处理函数
 func (m *MessageMatchDispatcher) OnFriendByNickName(nickName string, handlers ...MessageContextHandler) {
 	matchFunc := func(message *Message) bool {

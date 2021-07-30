@@ -63,6 +63,26 @@ const (
 	MsgTypeRecalled          = 10002 // 消息撤回
 )
 
+const (
+	AppMsgTypeText                  = 1      // 文字
+	AppMsgTypeImg                   = 2      // 图片
+	AppMsgTypeAudio                 = 3      // 音频
+	AppMsgTypeVideo                 = 4      // 视频
+	AppMsgTypeUrl                   = 5      // 链接
+	AppMsgTypeAttach                = 6      // 文件
+	AppMsgTypeOpen                  = 7      // 不知道是啥
+	AppMsgTypeEmoji                 = 8      // emoji
+	AppMsgTypeVoiceRemind           = 9      // 语音
+	AppMsgTypeScanGood              = 10     // 不知道是啥
+	AppMsgTypeGood                  = 13     // 不知道是啥
+	AppMsgTypeEmotion               = 15     // 表情包
+	AppMsgTypeCardTicket            = 16     // 不知道是啥
+	AppMsgTypeRealtimeShareLocation = 17     // 不知道是啥
+	AppMsgTypeTransfers             = 2000   // 不知道是啥
+	AppMsgTypeRedEnvelopes          = 2001   // 不知道是啥
+	AppMsgTypeReaderType            = 100001 // 不知道是啥
+)
+
 // 登录状态
 const (
 	statusSuccess = "200"
