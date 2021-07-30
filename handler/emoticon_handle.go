@@ -66,6 +66,7 @@ func emoticonMessageHandle(ctx *protocol.MessageContext) {
 
 	// 判断消息是不是表情商店的，如果是，不支持解析
 	if strings.Contains(ctx.Content, "<msg>") {
+		logger.Log.Debugf("原始数据: %v", ctx.Content)
 		logger.Log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：「收到了一个表情，请在手机上查看」", senderUser)
 	} else {
 		// 解析表情包
