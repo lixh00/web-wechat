@@ -249,7 +249,7 @@ func (m *Message) StatusNotify() bool {
 
 // HasFile 判断消息是否为文件类型的消息
 func (m *Message) HasFile() bool {
-	return m.IsPicture() || m.IsVoice() || m.IsVideo() || m.IsMedia()
+	return m.IsPicture() || m.IsVoice() || m.IsVideo() || m.IsMedia() || m.IsEmoticon()
 }
 
 // GetFile 获取文件消息的文件
@@ -257,7 +257,7 @@ func (m *Message) GetFile() (*http.Response, error) {
 	if !m.HasFile() {
 		return nil, errors.New("invalid message type")
 	}
-	if m.IsPicture() {
+	if m.IsPicture() || m.IsEmoticon() {
 		return m.Bot.Caller.Client.WebWxGetMsgImg(m, m.Bot.storage.LoginInfo)
 	}
 	if m.IsVoice() {
