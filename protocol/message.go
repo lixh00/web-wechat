@@ -83,9 +83,6 @@ func (m *Message) SenderInGroup() (*User, error) {
 		return nil, noSuchUserFoundError
 	}
 	sendUser := users.First()
-	// 处理Emoji
-	sendUser.NickName = FormatEmoji(sendUser.NickName)
-	sendUser.RemarkName = FormatEmoji(sendUser.RemarkName)
 	return sendUser, nil
 }
 

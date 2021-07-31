@@ -58,6 +58,10 @@ func (b *Bot) GetCurrentUser() (*Self, error) {
 //		err := bot.HotLogin(storage, true)
 //		fmt.Println(err)
 func (b *Bot) HotLogin(storage HotReloadStorage, retry ...bool) error {
+	// 热登录之前判断是否存活，如果存活，先退出一下
+	if b.Alive() {
+		b.cancel()
+	}
 	b.isHot = true
 	b.hotReloadStorage = storage
 
