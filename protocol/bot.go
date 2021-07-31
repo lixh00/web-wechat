@@ -414,7 +414,9 @@ func DefaultBot(modes ...mode) *Bot {
 	}
 	caller := DefaultCaller()
 	caller.Client.mode = m
-	return NewBot(caller)
+	bot := NewBot(caller)
+	bot.UUIDCallback = PrintlnQrcodeUrl
+	return bot
 }
 
 // GetQrcodeUrl 通过uuid获取登录二维码的url
