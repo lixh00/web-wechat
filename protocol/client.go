@@ -204,11 +204,11 @@ func (c *Client) SyncCheck(info *LoginInfo, response *WebInitResponse) (*http.Re
 	params.Add("uin", strconv.Itoa(info.WxUin))
 	params.Add("deviceid", GetRandomDeviceId())
 	params.Add("_", strconv.FormatInt(time.Now().Unix(), 10))
-	var syncKeyStringSlice []string
+	var syncKeyStringSlice = make([]string, response.SyncKey.Count)
 	// 将SyncKey里面的元素按照特定的格式拼接起来
-	for _, item := range response.SyncKey.List {
+	for index, item := range response.SyncKey.List {
 		i := fmt.Sprintf("%d_%d", item.Key, item.Val)
-		syncKeyStringSlice = append(syncKeyStringSlice, i)
+		syncKeyStringSlice[index] = i
 	}
 	syncKey := strings.Join(syncKeyStringSlice, "|")
 	params.Add("synckey", syncKey)

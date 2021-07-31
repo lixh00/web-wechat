@@ -393,8 +393,8 @@ func (s *Self) forwardMessage(msg *SentMessage, users ...*User) error {
 // ForwardMessageToFriends 转发给好友
 func (s *Self) ForwardMessageToFriends(msg *SentMessage, friends ...*Friend) error {
 	var users []*User
-	for _, friend := range friends {
-		users = append(users, friend.User)
+	for index, friend := range friends {
+		users[index] = friend.User
 	}
 	return s.forwardMessage(msg, users...)
 }
@@ -402,8 +402,8 @@ func (s *Self) ForwardMessageToFriends(msg *SentMessage, friends ...*Friend) err
 // ForwardMessageToGroups 转发给群组
 func (s *Self) ForwardMessageToGroups(msg *SentMessage, groups ...*Group) error {
 	var users []*User
-	for _, group := range groups {
-		users = append(users, group.User)
+	for index, group := range groups {
+		users[index] = group.User
 	}
 	return s.forwardMessage(msg, users...)
 }
