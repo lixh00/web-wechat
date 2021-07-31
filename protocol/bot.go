@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/url"
+	"sync"
 	"web-wechat/logger"
 )
 
@@ -15,6 +16,7 @@ type Bot struct {
 	MessageHandler         MessageHandler    // 获取消息成功的handle
 	GetMessageErrorHandler func(err error)   // 获取消息发生错误的handle
 	isHot                  bool
+	once                   sync.Once
 	err                    error
 	context                context.Context
 	cancel                 context.CancelFunc
@@ -271,15 +273,15 @@ func (b *Bot) webInit() error {
 	if err = b.Caller.WebWxStatusNotify(req, resp, info); err != nil {
 		return err
 	}
-	// 开启协程，轮训获取是否有新的消息返回
-	go func() {
+	// FIX: 当bot在线的情况下执行热登录,会开启多次事件监听
+	go b.once.Do(func() {
 		if b.GetMessageErrorHandler == nil {
 			b.GetMessageErrorHandler = b.stopAsyncCALL
 		}
 		if err = b.asyncCall(); err != nil {
 			b.GetMessageErrorHandler(err)
 		}
-	}()
+	})
 	return nil
 }
 
