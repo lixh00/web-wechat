@@ -92,9 +92,6 @@ func (u *User) Detail() (*User, error) {
 	}
 	user := newMembers.First()
 	user.Self = u.Self
-	// 处理昵称和备注的Emoji
-	user.NickName = FormatEmoji(user.NickName)
-	user.RemarkName = FormatEmoji(user.RemarkName)
 	return user, nil
 }
 
@@ -144,6 +141,12 @@ func (s *Self) updateMembers() error {
 		return err
 	}
 	members.SetOwner(s)
+	// 格式化emoji表情
+	for _, member := range members {
+		member.NickName = FormatEmoji(member.NickName)
+		member.RemarkName = FormatEmoji(member.RemarkName)
+		member.DisplayName = FormatEmoji(member.DisplayName)
+	}
 	s.members = members
 	return nil
 }

@@ -17,11 +17,16 @@ func otherMessageHandle(ctx *protocol.MessageContext) {
 	senderUser := sender.NickName
 	if ctx.IsSendByGroup() {
 		// 取出消息在群里面的发送者
-		senderInGroup, _ := ctx.SenderInGroup()
+		senderInGroup, err := ctx.SenderInGroup()
+		if err != nil {
+			logger.Log.Errorf("获取发信人失败: %v", err)
+			return
+		}
 		senderUser = fmt.Sprintf("%v[%v]", senderInGroup.NickName, senderUser)
 	}
 	logger.Log.Info("========================================================================================")
 	logger.Log.Infof("收到未定义消息\n消息类型: %v\n发信人: %v\n内容: %v", ctx.MsgType, senderUser,
 		protocol.XmlFormString(ctx.Content))
 	logger.Log.Info("========================================================================================")
+	ctx.Next()
 }
