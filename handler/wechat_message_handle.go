@@ -8,9 +8,7 @@ func HandleMessage(bot *protocol.Bot) {
 	// 设置为异步处理
 	dispatcher.SetAsync(true)
 	// 处理消息为已读
-	dispatcher.RegisterHandler(func(m *protocol.Message) bool {
-		return true
-	}, setTheMessageAsRead)
+	dispatcher.RegisterHandler(checkIsCanRead, setTheMessageAsRead)
 
 	// 注册文本消息处理函数
 	dispatcher.OnText(textMessageHandle)
