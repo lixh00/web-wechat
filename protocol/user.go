@@ -395,7 +395,7 @@ func (s *Self) forwardMessage(msg *SentMessage, users ...*User) error {
 
 // ForwardMessageToFriends 转发给好友
 func (s *Self) ForwardMessageToFriends(msg *SentMessage, friends ...*Friend) error {
-	var users []*User
+	var users = make([]*User, len(friends))
 	for index, friend := range friends {
 		users[index] = friend.User
 	}
@@ -404,7 +404,7 @@ func (s *Self) ForwardMessageToFriends(msg *SentMessage, friends ...*Friend) err
 
 // ForwardMessageToGroups 转发给群组
 func (s *Self) ForwardMessageToGroups(msg *SentMessage, groups ...*Group) error {
-	var users []*User
+	var users = make([]*User, len(groups))
 	for index, group := range groups {
 		users[index] = group.User
 	}

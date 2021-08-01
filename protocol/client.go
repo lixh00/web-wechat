@@ -588,9 +588,9 @@ func (c *Client) AddMemberIntoChatRoom(req *BaseRequest, info *LoginInfo, group 
 	params.Add("pass_ticket", info.PassTicket)
 	params.Add("lang", "zh_CN")
 	path.RawQuery = params.Encode()
-	addMemberList := make([]string, 0)
-	for _, friend := range friends {
-		addMemberList = append(addMemberList, friend.UserName)
+	addMemberList := make([]string, len(friends))
+	for index, friend := range friends {
+		addMemberList[index] = friend.UserName
 	}
 	content := map[string]interface{}{
 		"ChatRoomName":  group.UserName,
@@ -610,9 +610,9 @@ func (c *Client) RemoveMemberFromChatRoom(req *BaseRequest, info *LoginInfo, gro
 	params.Add("fun", "delmember")
 	params.Add("lang", "zh_CN")
 	params.Add("pass_ticket", info.PassTicket)
-	delMemberList := make([]string, 0)
-	for _, friend := range friends {
-		delMemberList = append(delMemberList, friend.UserName)
+	delMemberList := make([]string, len(friends))
+	for index, friend := range friends {
+		delMemberList[index] = friend.UserName
 	}
 	content := map[string]interface{}{
 		"ChatRoomName":  group.UserName,

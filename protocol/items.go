@@ -120,7 +120,7 @@ type UserDetailItem struct {
 type UserDetailItemList []UserDetailItem
 
 func NewUserDetailItemList(members Members) UserDetailItemList {
-	var list UserDetailItemList
+	var list = make(UserDetailItemList, len(members))
 	for index, member := range members {
 		item := UserDetailItem{UserName: member.UserName, EncryChatRoomId: member.EncryChatRoomId}
 		list[index] = item
