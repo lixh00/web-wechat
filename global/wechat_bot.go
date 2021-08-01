@@ -2,6 +2,7 @@ package global
 
 import (
 	"errors"
+	"github.com/eatmoreapple/openwechat"
 	"github.com/robfig/cron"
 	"sync/atomic"
 	"web-wechat/db"
@@ -12,16 +13,16 @@ import (
 
 // InitWechatBotsMap 初始化WechatBots
 func InitWechatBotsMap() {
-	wechatBots = make(map[string]*protocol.Bot)
+	wechatBots = make(map[string]*protocol.WechatBot)
 }
 
 // GetBot 获取Bot对象
-func GetBot(appKey string) *protocol.Bot {
+func GetBot(appKey string) *protocol.WechatBot {
 	return wechatBots[appKey]
 }
 
 // SetBot 保存Bot对象
-func SetBot(appKey string, bot *protocol.Bot) {
+func SetBot(appKey string, bot *protocol.WechatBot) {
 	wechatBots[appKey] = bot
 }
 
@@ -40,8 +41,8 @@ func CheckBot(appKey string) error {
 }
 
 // InitWechatBotHandle 初始化微信机器人
-func InitWechatBotHandle() *protocol.Bot {
-	bot := protocol.DefaultBot(protocol.Desktop)
+func InitWechatBotHandle() *protocol.WechatBot {
+	bot := openwechat.DefaultBot(openwechat.Desktop)
 
 	// 定义读取消息错误回调函数
 	var getMessageErrorCount int32
@@ -58,7 +59,7 @@ func InitWechatBotHandle() *protocol.Bot {
 	// 获取消息发生错误
 	//bot.MessageOnError()
 	// 返回机器人对象
-	return bot
+	return &protocol.WechatBot{Bot: *bot}
 }
 
 // UpdateHotLoginData 更新热登录数据
@@ -69,7 +70,7 @@ func UpdateHotLoginData() {
 	_ = c.AddFunc("0 0/30 * * * ? ", func() {
 		for key, bot := range wechatBots {
 			if bot.Alive() {
-				storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + key)
+				storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
 				if err := bot.HotLogin(storage, false); err != nil {
 					logger.Log.Errorf("定时热登录失败: %v", err)
 					continue
@@ -104,7 +105,7 @@ func KeepAliveHandle() {
 					logger.Log.Errorf("获取文件助手失败 ====> %v", err.Error())
 					continue
 				}
-				if _, err := file.SendText(protocol.ZombieText); err != nil {
+				if _, err := file.SendText(openwechat.ZombieText); err != nil {
 					logger.Log.Errorf("【%v】保活失败 ====> %v", user.NickName, err.Error())
 					errKey = append(errKey, k)
 					continue
@@ -117,7 +118,7 @@ func KeepAliveHandle() {
 		for _, key := range errKey {
 			// 取出热登录信息登录一次，如果登录失败就删除实例
 			bot := GetBot(key)
-			storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + key)
+			storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
 			if err := bot.HotLogin(storage, false); err != nil {
 				logger.Log.Errorf("[%v] 热登录失败，错误信息：%v", key, err.Error())
 				// 登录失败，删除热登录数据

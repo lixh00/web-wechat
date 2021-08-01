@@ -1,10 +1,12 @@
 package handler
 
-import "web-wechat/protocol"
+import (
+	"github.com/eatmoreapple/openwechat"
+)
 
-func HandleMessage(bot *protocol.Bot) {
+func HandleMessage(bot *openwechat.Bot) {
 	// 定义一个处理器
-	dispatcher := protocol.NewMessageMatchDispatcher()
+	dispatcher := openwechat.NewMessageMatchDispatcher()
 	// 设置为异步处理
 	dispatcher.SetAsync(true)
 	// 处理消息为已读
@@ -22,5 +24,5 @@ func HandleMessage(bot *protocol.Bot) {
 	dispatcher.RegisterHandler(checkIsOther, otherMessageHandle)
 
 	// 注册消息处理器
-	bot.MessageHandler = protocol.DispatchMessage(dispatcher)
+	bot.MessageHandler = openwechat.DispatchMessage(dispatcher)
 }

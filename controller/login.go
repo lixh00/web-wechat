@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"github.com/eatmoreapple/openwechat"
 	"github.com/gin-gonic/gin"
 	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/logger"
-	"web-wechat/protocol"
 )
 
 // 获取登录URL返回结构体
@@ -23,7 +23,7 @@ func GetLoginUrlHandle(ctx *gin.Context) {
 
 	// 获取登录二维码链接
 	url := "https://login.weixin.qq.com/qrcode/"
-	bot.UUIDCallback = protocol.PrintlnQrcodeUrl
+	bot.UUIDCallback = openwechat.PrintlnQrcodeUrl
 	uuid, err := bot.GetUUID()
 	if err != nil {
 		core.FailWithMessage("获取UUID失败", ctx)
@@ -65,7 +65,7 @@ func LoginHandle(ctx *gin.Context) {
 	}
 
 	// 热登录
-	storage := protocol.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
+	storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
 	if err := bot.HotLoginWithUUID(uuid, storage, true); err != nil {
 		logger.Log.Errorf("热登录失败: %v", err)
 		core.FailWithMessage("登录失败："+err.Error(), ctx)

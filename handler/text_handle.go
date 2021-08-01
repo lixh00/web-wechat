@@ -2,12 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"github.com/eatmoreapple/openwechat"
 	"web-wechat/logger"
-	"web-wechat/protocol"
 )
 
 // 处理文本消息
-func textMessageHandle(ctx *protocol.MessageContext) {
+func textMessageHandle(ctx *openwechat.MessageContext) {
 	sender, _ := ctx.Sender()
 	senderUser := sender.NickName
 	if ctx.IsSendByGroup() {

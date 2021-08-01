@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"github.com/eatmoreapple/openwechat"
 	"io/ioutil"
 	"net/http"
 	"web-wechat/core"
 	"web-wechat/logger"
 	"web-wechat/oss"
-	"web-wechat/protocol"
 )
 
 type AppMessageData struct {
@@ -65,7 +65,7 @@ type AppMessageData struct {
 }
 
 // APP消息处理
-func appMessageHandle(ctx *protocol.MessageContext) {
+func appMessageHandle(ctx *openwechat.MessageContext) {
 	// 取出发送者
 	sender, _ := ctx.Sender()
 	senderUser := sender.NickName
@@ -78,7 +78,7 @@ func appMessageHandle(ctx *protocol.MessageContext) {
 	var data AppMessageData
 	if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 		logger.Log.Errorf("消息解析失败: %v", err.Error())
-		logger.Log.Debugf("原始内容: %v", protocol.XmlFormString(ctx.Content))
+		logger.Log.Debugf("原始内容: %v", openwechat.XmlFormString(ctx.Content))
 		return
 	} else {
 		logger.Log.Infof("[收到新文件消息] == 发信人：%v ==> Type：%v ==> 标题：%v ==> 来源APP: %v",

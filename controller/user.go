@@ -1,37 +1,27 @@
 package controller
 
 import (
+	"github.com/eatmoreapple/openwechat"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/logger"
-	"web-wechat/protocol"
 )
 
 // 返回用户信息包装类
 type responseUserInfo struct {
-	Uin int `json:"uin"`
-	// 性别
-	Sex int `json:"sex"`
-	// 省
-	Province string `json:"province"`
-	// 市
-	City string `json:"city"`
-	// 别名
-	Alias string `json:"alias"`
-	// 显示名称
-	DisplayName string `json:"display_name"`
-	// 昵称
-	NickName string `json:"nick_name"`
-	// 备注
-	RemarkName string `json:"remark_name"`
-	// 头像
-	HeadImgUrl string `json:"head_img_url"`
-	// 当前登录中用户的唯一标识
-	UserName string `json:"user_name"`
-	// 群成员(群独有)
-	Members []*protocol.User `json:"members"`
+	Uin         int                `json:"uin"`          // 用户唯一ID
+	Sex         int                `json:"sex"`          // 性别
+	Province    string             `json:"province"`     // 省
+	City        string             `json:"city"`         // 市
+	Alias       string             `json:"alias"`        // 别名
+	DisplayName string             `json:"display_name"` // 显示名称
+	NickName    string             `json:"nick_name"`    // 昵称
+	RemarkName  string             `json:"remark_name"`  // 备注
+	HeadImgUrl  string             `json:"head_img_url"` // 头像
+	UserName    string             `json:"user_name"`    // 当前登录中用户的唯一标识
+	Members     []*openwechat.User `json:"members"`      // 群成员(群独有)
 }
 
 // 返回的好友列表的实体
@@ -87,9 +77,9 @@ func GetFriendsListHandle(ctx *gin.Context) {
 			Province:    friend.Province,
 			City:        friend.City,
 			Alias:       friend.Alias,
-			DisplayName: protocol.FormatEmoji(friend.DisplayName),
-			NickName:    protocol.FormatEmoji(friend.NickName),
-			RemarkName:  protocol.FormatEmoji(friend.RemarkName),
+			DisplayName: friend.DisplayName,
+			NickName:    friend.NickName,
+			RemarkName:  friend.RemarkName,
 			HeadImgUrl:  friend.HeadImgUrl,
 			UserName:    friend.UserName,
 		})
@@ -106,9 +96,9 @@ func GetFriendsListHandle(ctx *gin.Context) {
 			Province:    group.Province,
 			City:        group.City,
 			Alias:       group.Alias,
-			DisplayName: protocol.FormatEmoji(group.DisplayName),
-			NickName:    protocol.FormatEmoji(group.NickName),
-			RemarkName:  protocol.FormatEmoji(group.RemarkName),
+			DisplayName: group.DisplayName,
+			NickName:    group.NickName,
+			RemarkName:  group.RemarkName,
 			HeadImgUrl:  group.HeadImgUrl,
 			UserName:    group.UserName,
 			Members:     members,

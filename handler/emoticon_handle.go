@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"github.com/eatmoreapple/openwechat"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"web-wechat/core"
 	"web-wechat/logger"
 	"web-wechat/oss"
-	"web-wechat/protocol"
 )
 
 // EmoticonMessageData 表情包消息结构体
@@ -54,7 +54,7 @@ type EmoticonMessageData struct {
 }
 
 // 表情包消息处理
-func emoticonMessageHandle(ctx *protocol.MessageContext) {
+func emoticonMessageHandle(ctx *openwechat.MessageContext) {
 	// 取出发送者
 	sender, _ := ctx.Sender()
 	senderUser := sender.NickName
@@ -73,7 +73,7 @@ func emoticonMessageHandle(ctx *protocol.MessageContext) {
 		var data EmoticonMessageData
 		if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 			logger.Log.Errorf("消息解析失败: %v", err.Error())
-			logger.Log.Debugf("原始内容: %v", protocol.XmlFormString(ctx.Content))
+			logger.Log.Debugf("原始内容: %v", openwechat.XmlFormString(ctx.Content))
 			return
 		} else {
 			logger.Log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：%v", senderUser, data.Emoji.Md5)

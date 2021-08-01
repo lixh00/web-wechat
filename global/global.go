@@ -6,5 +6,5 @@ import (
 
 var (
 	// 登录用户的Bot对象
-	wechatBots map[string]*protocol.Bot
+	wechatBots map[string]*protocol.WechatBot
 )

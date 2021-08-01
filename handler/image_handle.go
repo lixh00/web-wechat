@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"github.com/eatmoreapple/openwechat"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"web-wechat/core"
 	"web-wechat/logger"
 	"web-wechat/oss"
-	"web-wechat/protocol"
 )
 
 // ImageMessageData 图片消息结构体
@@ -38,7 +38,7 @@ type ImageMessageData struct {
 }
 
 // 处理图片消息
-func imageMessageHandle(ctx *protocol.MessageContext) {
+func imageMessageHandle(ctx *openwechat.MessageContext) {
 	sender, _ := ctx.Sender()
 	senderUser := sender.NickName
 	if ctx.IsSendByGroup() {
@@ -50,7 +50,7 @@ func imageMessageHandle(ctx *protocol.MessageContext) {
 	var data ImageMessageData
 	if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 		logger.Log.Errorf("消息解析失败: %v", err.Error())
-		logger.Log.Debugf("发信人: %v ==> 原始内容: %v", senderUser, protocol.XmlFormString(ctx.Content))
+		logger.Log.Debugf("发信人: %v ==> 原始内容: %v", senderUser, openwechat.XmlFormString(ctx.Content))
 		return
 	} else {
 		logger.Log.Infof("[收到新图片消息] == 发信人：%v ==> 内容：%v", senderUser, data.Img.AesKey)
