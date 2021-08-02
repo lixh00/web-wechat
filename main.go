@@ -15,8 +15,6 @@ import (
 func main() {
 	// 初始化日志
 	logger.InitLogger()
-	// 初始化OSS
-	oss.InitOssConnHandle()
 	// 初始化Gin
 	app := gin.Default()
 
@@ -29,6 +27,9 @@ func main() {
 
 	// 初始化WechatBotMap
 	global.InitWechatBotsMap()
+
+	// 初始化OSS
+	oss.InitOssConnHandle()
 
 	// 初始化Redis连接
 	db.InitRedisConnHandle()

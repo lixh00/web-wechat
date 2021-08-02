@@ -131,7 +131,8 @@ func (f *RedisHotReloadStorage) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// Close 重写更新热登录数据，保存到Redis
+// Close 需要关闭
 func (f *RedisHotReloadStorage) Close() error {
+	f.reader = nil
 	return nil
 }
