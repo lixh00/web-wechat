@@ -5,8 +5,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
-github.com/eatmoreapple/openwechat v0.0.0-20210802084826-017faf2594fc h1:dYH0xAMrK7TYUOXZDg6Kdzxn+MxX1LbP4XHCsNuMwkI=
-github.com/eatmoreapple/openwechat v0.0.0-20210802084826-017faf2594fc/go.mod h1:61HOzTyvLobGdgWhL68jfGNwTJEv0mhQ1miCXQrvWU8=
 github.com/eatmoreapple/openwechat v0.0.0-20210802142808-d36e8dde6607 h1:bUIkeI01NPI3sNLZYynyWnrl3d/gRJlL9y65AvvXXNk=
 github.com/eatmoreapple/openwechat v0.0.0-20210802142808-d36e8dde6607/go.mod h1:61HOzTyvLobGdgWhL68jfGNwTJEv0mhQ1miCXQrvWU8=
 github.com/garyburd/redigo v1.6.2 h1:yE/pwKCrbLpLpQICzYTeZ7JsTA/C53wFTJHaEtRqniM=
