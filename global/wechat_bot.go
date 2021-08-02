@@ -70,7 +70,8 @@ func UpdateHotLoginData() {
 	_ = c.AddFunc("0 0/30 * * * ? ", func() {
 		for key, bot := range wechatBots {
 			if bot.Alive() {
-				storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
+				//storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
+				storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
 				if err := bot.HotLogin(storage, false); err != nil {
 					logger.Log.Errorf("定时热登录失败: %v", err)
 					continue
@@ -118,7 +119,8 @@ func KeepAliveHandle() {
 		for _, key := range errKey {
 			// 取出热登录信息登录一次，如果登录失败就删除实例
 			bot := GetBot(key)
-			storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
+			//storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
+			storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
 			if err := bot.HotLogin(storage, false); err != nil {
 				logger.Log.Errorf("[%v] 热登录失败，错误信息：%v", key, err.Error())
 				// 登录失败，删除热登录数据

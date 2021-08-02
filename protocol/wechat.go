@@ -93,9 +93,9 @@ func (b *WechatBot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retr
 		}
 		b.Caller.Client.Jar.SetCookies(path, ck)
 	}
-	b.storage.LoginInfo = item.LoginInfo
-	b.storage.Request = item.BaseRequest
-	b.Caller.Client.domain = item.WechatDomain
+	b.Storage.LoginInfo = item.LoginInfo
+	b.Storage.Request = item.BaseRequest
+	b.Caller.Client.Domain = item.WechatDomain
 
 	// 如果webInit出错,则说明可能身份信息已经失效
 	// 如果retry为True的话,则进行正常登陆
@@ -129,4 +129,9 @@ func (f *RedisHotReloadStorage) Write(p []byte) (n int, err error) {
 		return 0, err
 	}
 	return len(p), nil
+}
+
+// Close 重写更新热登录数据，保存到Redis
+func (f *RedisHotReloadStorage) Close() error {
+	return nil
 }

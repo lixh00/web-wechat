@@ -6,6 +6,7 @@ import (
 	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/logger"
+	"web-wechat/protocol"
 )
 
 // 获取登录URL返回结构体
@@ -65,7 +66,8 @@ func LoginHandle(ctx *gin.Context) {
 	}
 
 	// 热登录
-	storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
+	//storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
+	storage := protocol.NewRedisHotReloadStorage("wechat:login:" + appKey)
 	if err := bot.HotLoginWithUUID(uuid, storage, true); err != nil {
 		logger.Log.Errorf("热登录失败: %v", err)
 		core.FailWithMessage("登录失败："+err.Error(), ctx)
