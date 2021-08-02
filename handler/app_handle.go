@@ -104,6 +104,10 @@ func appMessageHandle(ctx *openwechat.MessageContext) {
 			// 读取文件相关信息
 			contentType := http.DetectContentType(imgFileByte)
 			fileName := fmt.Sprintf("%v_%v", ctx.MsgId, data.Appmsg.Title)
+			if user, err := ctx.Bot.GetCurrentUser(); err == nil {
+				uin := user.Uin
+				fileName = fmt.Sprintf("%v/%v", uin, fileName)
+			}
 			// 上传文件(reader2解决上传空文件的BUG,因为http.Response.Body只允许读一次)
 			reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
 			flag := oss.SaveToOss(reader2, contentType, fileName)

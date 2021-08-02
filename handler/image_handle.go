@@ -50,7 +50,7 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 	var data ImageMessageData
 	if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 		logger.Log.Errorf("消息解析失败: %v", err.Error())
-		logger.Log.Debugf("发信人: %v ==> 原始内容: %v", senderUser, openwechat.XmlFormString(ctx.Content))
+		logger.Log.Debugf("发信人: %v ==> 原始内容: %v", senderUser, ctx.Content)
 		return
 	} else {
 		logger.Log.Infof("[收到新图片消息] == 发信人：%v ==> 内容：%v", senderUser, data.Img.AesKey)
@@ -70,6 +70,11 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 			contentType := http.DetectContentType(imgFileByte)
 			fileType := strings.Split(contentType, "/")[1]
 			fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
+			if user, err := ctx.Bot.GetCurrentUser(); err == nil {
+				uin := user.Uin
+				fileName = fmt.Sprintf("%v/%v", uin, fileName)
+			}
+
 			// 上传文件
 			reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
 			flag := oss.SaveToOss(reader2, contentType, fileName)
