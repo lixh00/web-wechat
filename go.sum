@@ -7,6 +7,8 @@ github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/eatmoreapple/openwechat v0.0.0-20210802084826-017faf2594fc h1:dYH0xAMrK7TYUOXZDg6Kdzxn+MxX1LbP4XHCsNuMwkI=
 github.com/eatmoreapple/openwechat v0.0.0-20210802084826-017faf2594fc/go.mod h1:61HOzTyvLobGdgWhL68jfGNwTJEv0mhQ1miCXQrvWU8=
+github.com/eatmoreapple/openwechat v0.0.0-20210802142808-d36e8dde6607 h1:bUIkeI01NPI3sNLZYynyWnrl3d/gRJlL9y65AvvXXNk=
+github.com/eatmoreapple/openwechat v0.0.0-20210802142808-d36e8dde6607/go.mod h1:61HOzTyvLobGdgWhL68jfGNwTJEv0mhQ1miCXQrvWU8=
 github.com/garyburd/redigo v1.6.2 h1:yE/pwKCrbLpLpQICzYTeZ7JsTA/C53wFTJHaEtRqniM=
 github.com/garyburd/redigo v1.6.2/go.mod h1:NR3MbYisc3/PwhQ00EMzDiPmrwpPxAn5GI05/YaO1SY=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
