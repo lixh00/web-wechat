@@ -1,10 +1,12 @@
 package global
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/robfig/cron"
 	"sync/atomic"
+	"time"
 	"web-wechat/db"
 	"web-wechat/handler"
 	"web-wechat/logger"
@@ -70,14 +72,19 @@ func UpdateHotLoginData() {
 	_ = c.AddFunc("0 0/30 * * * ? ", func() {
 		for key, bot := range wechatBots {
 			if bot.Alive() {
-				storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
-				if err := bot.HotLogin(storage, false); err != nil {
-					logger.Log.Errorf("定时热登录失败: %v", err)
-					continue
+				// 判断是否需要热登录
+				if checkHotLogin(key) {
+					storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
+					if err := bot.HotLogin(storage, false); err != nil {
+						logger.Log.Errorf("定时热登录失败: %v", err)
+						continue
+					}
+				} else {
+					logger.Log.Debugf("到期时间大于1小时，暂不重新登录")
 				}
 				user, _ := bot.GetCurrentUser()
 				if err := bot.DumpHotReloadStorage(); err != nil {
-					logger.Log.Errorf("【%v】更新热登录数据失败", user.NickName)
+					logger.Log.Errorf("【%v】更新热登录数据失败，错误信息: %v", user.NickName, err)
 				}
 				logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
 			}
@@ -118,7 +125,7 @@ func KeepAliveHandle() {
 		for _, key := range errKey {
 			// 取出热登录信息登录一次，如果登录失败就删除实例
 			bot := GetBot(key)
-			storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + key)
+			storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
 			if err := bot.HotLogin(storage, false); err != nil {
 				logger.Log.Errorf("[%v] 热登录失败，错误信息：%v", key, err.Error())
 				// 登录失败，删除热登录数据
@@ -136,4 +143,41 @@ func KeepAliveHandle() {
 	go c.Start()
 	// 等待停止信号结束任务
 	defer c.Stop()
+}
+
+// 判断是否需要热登录
+func checkHotLogin(appKey string) bool {
+	jsonStr, err := db.GetRedis("wechat:login:" + appKey)
+	if err != nil {
+		logger.Log.Errorf("热登录数据获取失败: %v", err)
+		return false
+	}
+	// 热登录数据转化为实体
+	var hotLoginData openwechat.HotReloadStorageItem
+	// 反序列化热登录数据
+	err = json.Unmarshal([]byte(jsonStr), &hotLoginData)
+	if err != nil {
+		logger.Log.Errorf("反序列化热登录数据失败: %v", err)
+		return false
+	}
+
+	for _, cookies := range hotLoginData.Cookies {
+		if len(cookies) > 0 {
+			//logger.Log.Debugf("保存的Cookie值: %v", cookies)
+			for _, cookie := range cookies {
+				if cookie.Name == "wxsid" {
+					loc, _ := time.LoadLocation("GMT")
+					expiresGMTTime, _ := time.ParseInLocation("Mon, 02-Jan-2006 15:04:05 GMT", cookie.RawExpires, loc)
+					loc2, _ := time.LoadLocation("Local")
+					expiresLocalTime := expiresGMTTime.In(loc2)
+					//logger.Log.Debugf("登录有效到期时间: %v", expiresLocalTime)
+					overHours := expiresLocalTime.Sub(time.Now().In(loc2)).Hours()
+					logger.Log.Debugf("[%v]距离到期时间还剩 %v 小时", appKey, overHours)
+					// 小于1小时就返回true，表示需要热登录
+					return overHours < 1
+				}
+			}
+		}
+	}
+	return false
 }

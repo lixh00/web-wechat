@@ -1,9 +1,9 @@
 package global
 
 import (
-	"github.com/eatmoreapple/openwechat"
 	"web-wechat/db"
 	"web-wechat/logger"
+	"web-wechat/protocol"
 )
 
 // InitBotWithStart 系统启动的时候从Redis加载登录信息自动登录
@@ -20,7 +20,7 @@ func InitBotWithStart() {
 		// 调用热登录
 		logger.Log.Debugf("当前热登录AppKey: %v", appKey)
 		bot := InitWechatBotHandle()
-		storage := openwechat.NewJsonFileHotReloadStorage(key)
+		storage := protocol.NewRedisHotReloadStorage(key)
 		if err := bot.HotLogin(storage, false); err != nil {
 			logger.Log.Infof("[%v] 热登录失败，错误信息：%v", appKey, err.Error())
 			// 登录失败，删除热登录数据
