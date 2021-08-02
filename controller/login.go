@@ -66,7 +66,6 @@ func LoginHandle(ctx *gin.Context) {
 	}
 
 	// 热登录
-	//storage := openwechat.NewJsonFileHotReloadStorage("wechat:login:" + appKey)
 	storage := protocol.NewRedisHotReloadStorage("wechat:login:" + appKey)
 	if err := bot.HotLoginWithUUID(uuid, storage, true); err != nil {
 		logger.Log.Errorf("热登录失败: %v", err)
