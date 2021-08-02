@@ -73,7 +73,7 @@ func emoticonMessageHandle(ctx *openwechat.MessageContext) {
 		var data EmoticonMessageData
 		if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 			logger.Log.Errorf("消息解析失败: %v", err.Error())
-			logger.Log.Debugf("原始内容: %v", openwechat.XmlFormString(ctx.Content))
+			logger.Log.Debugf("原始内容: %v", ctx.Content)
 			return
 		} else {
 			logger.Log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：%v", senderUser, data.Emoji.Md5)

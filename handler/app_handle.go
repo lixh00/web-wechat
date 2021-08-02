@@ -78,7 +78,7 @@ func appMessageHandle(ctx *openwechat.MessageContext) {
 	var data AppMessageData
 	if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 		logger.Log.Errorf("消息解析失败: %v", err.Error())
-		logger.Log.Debugf("原始内容: %v", openwechat.XmlFormString(ctx.Content))
+		logger.Log.Debugf("原始内容: %v", ctx.Content)
 		return
 	} else {
 		logger.Log.Infof("[收到新文件消息] == 发信人：%v ==> Type：%v ==> 标题：%v ==> 来源APP: %v",

@@ -25,8 +25,7 @@ func otherMessageHandle(ctx *openwechat.MessageContext) {
 		senderUser = fmt.Sprintf("%v[%v]", senderInGroup.NickName, senderUser)
 	}
 	logger.Log.Info("========================================================================================")
-	logger.Log.Infof("收到未定义消息\n消息类型: %v\n发信人: %v\n内容: %v", ctx.MsgType, senderUser,
-		openwechat.XmlFormString(ctx.Content))
+	logger.Log.Infof("收到未定义消息\n消息类型: %v\n发信人: %v\n内容: %v", ctx.MsgType, senderUser, ctx.Content)
 	logger.Log.Info("========================================================================================")
 	ctx.Next()
 }
