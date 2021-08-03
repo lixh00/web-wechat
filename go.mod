@@ -5,10 +5,15 @@ go 1.15
 require (
 	github.com/eatmoreapple/openwechat v0.0.0-20210803032800-95a4a4d188fc
 	github.com/garyburd/redigo v1.6.2
-	github.com/gin-gonic/gin v1.7.1
+	github.com/gin-gonic/gin v1.7.3
+	github.com/go-playground/validator/v10 v10.8.0 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/json-iterator/go v1.1.11 // indirect
+	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/minio/minio-go/v7 v7.0.12
 	github.com/robfig/cron v1.2.0
+	github.com/ugorji/go v1.2.6 // indirect
 	go.uber.org/zap v1.18.1
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
-	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
+	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
