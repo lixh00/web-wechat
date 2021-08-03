@@ -3,7 +3,7 @@ module web-wechat
 go 1.15
 
 require (
-	github.com/eatmoreapple/openwechat v0.0.0-20210802142808-d36e8dde6607
+	github.com/eatmoreapple/openwechat v0.0.0-20210803032800-95a4a4d188fc
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-gonic/gin v1.7.1
 	github.com/minio/minio-go/v7 v7.0.12
