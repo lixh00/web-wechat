@@ -48,42 +48,44 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 	}
 	// 解析xml为结构体
 	var data ImageMessageData
-	if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
+	if strings.HasPrefix(ctx.Content, "@") && !strings.Contains(ctx.Content, " ") {
+		logger.Log.Debug("消息内容为图片资源ID，不解析为结构体")
+	} else if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
 		logger.Log.Errorf("消息解析失败: %v", err.Error())
 		logger.Log.Debugf("发信人: %v ==> 原始内容: %v", senderUser, ctx.Content)
 		return
-	} else {
-		logger.Log.Infof("[收到新图片消息] == 发信人：%v ==> 内容：%v", senderUser, data.Img.AesKey)
-		// 下载图片资源
-		fileResp, err := ctx.GetFile()
-		if err != nil {
-			logger.Log.Errorf("图片下载失败: %v", err.Error())
-			return
-		}
-		defer fileResp.Body.Close()
-		imgFileByte, err := ioutil.ReadAll(fileResp.Body)
-		if err != nil {
-			logger.Log.Errorf("图片读取错误: %v", err.Error())
-			return
-		} else {
-			// 读取文件相关信息
-			contentType := http.DetectContentType(imgFileByte)
-			fileType := strings.Split(contentType, "/")[1]
-			fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
-			if user, err := ctx.Bot.GetCurrentUser(); err == nil {
-				uin := user.Uin
-				fileName = fmt.Sprintf("%v/%v", uin, fileName)
-			}
+	}
 
-			// 上传文件
-			reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
-			flag := oss.SaveToOss(reader2, contentType, fileName)
-			if flag {
-				fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
-				logger.Log.Infof("图片保存成功，图片链接: %v", fileUrl)
-			} else {
-				logger.Log.Error("图片保存失败")
-			}
+	logger.Log.Infof("[收到新图片消息] == 发信人：%v", senderUser)
+	// 下载图片资源
+	fileResp, err := ctx.GetFile()
+	if err != nil {
+		logger.Log.Errorf("图片下载失败: %v", err.Error())
+		return
+	}
+	defer fileResp.Body.Close()
+	imgFileByte, err := ioutil.ReadAll(fileResp.Body)
+	if err != nil {
+		logger.Log.Errorf("图片读取错误: %v", err.Error())
+		return
+	} else {
+		// 读取文件相关信息
+		contentType := http.DetectContentType(imgFileByte)
+		fileType := strings.Split(contentType, "/")[1]
+		fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
+		if user, err := ctx.Bot.GetCurrentUser(); err == nil {
+			uin := user.Uin
+			fileName = fmt.Sprintf("%v/%v", uin, fileName)
+		}
+
+		// 上传文件
+		reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
+		flag := oss.SaveToOss(reader2, contentType, fileName)
+		if flag {
+			fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
+			logger.Log.Infof("图片保存成功，图片链接: %v", fileUrl)
+		} else {
+			logger.Log.Error("图片保存失败")
 		}
 	}
 	ctx.Next()
