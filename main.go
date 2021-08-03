@@ -21,7 +21,7 @@ func main() {
 	// 定义全局异常处理
 	app.NoRoute(core.NotFoundErrorHandler())
 	// AppKey预检
-	app.Use(middleware.CheckAppKeyMiddleware())
+	app.Use(middleware.CheckAppKeyExistMiddleware(), middleware.CheckAppKeyIsLoggedInMiddleware())
 	// 初始化路由
 	route.InitRoute(app)
 
