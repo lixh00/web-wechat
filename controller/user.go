@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/eatmoreapple/openwechat"
 	"github.com/gin-gonic/gin"
-	"strconv"
 	"web-wechat/core"
 	"web-wechat/global"
 	"web-wechat/logger"
@@ -44,8 +43,19 @@ func GetCurrentUserInfoHandle(ctx *gin.Context) {
 	}
 
 	logger.Log.Infof("登录用户：%v", user.NickName)
-	// TODO 这儿的返回数据后面改成struct
-	core.OkWithData(map[string]string{"nickName": user.NickName, "uin": strconv.Itoa(user.Uin)}, ctx)
+	userDataVO := responseUserInfo{
+		Uin:         user.Uin,
+		Sex:         user.Sex,
+		Province:    user.Province,
+		City:        user.City,
+		Alias:       user.Alias,
+		DisplayName: user.DisplayName,
+		NickName:    user.NickName,
+		RemarkName:  user.RemarkName,
+		HeadImgUrl:  user.HeadImgUrl,
+		UserName:    user.UserName,
+	}
+	core.OkWithData(userDataVO, ctx)
 }
 
 // GetFriendsListHandle 获取好友列表
