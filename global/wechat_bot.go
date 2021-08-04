@@ -80,7 +80,7 @@ func UpdateHotLoginData() {
 						continue
 					}
 				} else {
-					logger.Log.Debugf("到期时间大于1小时，暂不重新登录")
+					logger.Log.Debugf("到期时间大于11小时，暂不重新登录")
 				}
 				user, _ := bot.GetCurrentUser()
 				if err := bot.DumpHotReloadStorage(); err != nil {
@@ -173,8 +173,8 @@ func checkHotLogin(appKey string) bool {
 					//logger.Log.Debugf("登录有效到期时间: %v", expiresLocalTime)
 					overHours := expiresLocalTime.Sub(time.Now().In(loc2)).Hours()
 					logger.Log.Debugf("[%v]距离到期时间还剩 %v 小时", appKey, overHours)
-					// 小于1小时就返回true，表示需要热登录
-					return overHours < 1
+					// 小于11小时就返回true，表示需要热登录
+					return overHours < 11
 				}
 			}
 		}
