@@ -69,32 +69,35 @@ func UpdateHotLoginData() {
 	// 创建一个新的定时任务管理器
 	c := cron.New()
 	// 添加一个每三十分钟执行一次的执行器
-	_ = c.AddFunc("0 0/30 * * * ? ", func() {
-		for key, bot := range wechatBots {
-			if bot.Alive() {
-				// 判断是否需要热登录
-				if checkHotLogin(key) {
-					storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
-					if err := bot.HotLogin(storage, false); err != nil {
-						logger.Log.Errorf("定时热登录失败: %v", err)
-						continue
-					}
-				} else {
-					logger.Log.Debugf("到期时间大于11小时，暂不重新登录")
-				}
-				user, _ := bot.GetCurrentUser()
-				if err := bot.DumpHotReloadStorage(); err != nil {
-					logger.Log.Errorf("【%v】更新热登录数据失败，错误信息: %v", user.NickName, err)
-				}
-				logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
-			}
-			continue
-		}
-	})
+	_ = c.AddFunc("0 0/30 * * * ? ", dealUpdateHotLoginData)
 	// 新启一个协程，运行定时任务
 	go c.Start()
 	// 等待停止信号结束任务
 	defer c.Stop()
+}
+
+// 更新热登录数据函数
+func dealUpdateHotLoginData() {
+	for key, bot := range wechatBots {
+		if bot.Alive() {
+			// 判断是否需要热登录
+			if checkHotLogin(key) {
+				storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
+				if err := bot.HotLogin(storage, false); err != nil {
+					logger.Log.Errorf("定时热登录失败: %v", err)
+					continue
+				}
+			} else {
+				logger.Log.Debugf("到期时间大于11小时，暂不重新登录")
+			}
+			user, _ := bot.GetCurrentUser()
+			if err := bot.DumpHotReloadStorage(); err != nil {
+				logger.Log.Errorf("【%v】更新热登录数据失败，错误信息: %v", user.NickName, err)
+			}
+			logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
+		}
+		continue
+	}
 }
 
 // KeepAliveHandle 保活，每三时自动给文件传输助手发一条消息
