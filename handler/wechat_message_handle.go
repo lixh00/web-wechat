@@ -11,6 +11,8 @@ func HandleMessage(bot *openwechat.Bot) {
 	dispatcher.SetAsync(true)
 	// 处理消息为已读
 	dispatcher.RegisterHandler(checkIsCanRead, setTheMessageAsRead)
+	// 保存消息
+	dispatcher.RegisterHandler(checkNeedSave, saveToDb)
 
 	// 注册文本消息处理函数
 	dispatcher.OnText(textMessageHandle)

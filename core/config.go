@@ -1,14 +1,16 @@
 package core
 
 import (
+	"fmt"
 	"web-wechat/utils"
 )
 
 // RedisConfig Redis配置
 var (
-	RedisConfig redisConfig
-	MySQLConfig mysqlConfig
-	OssConfig   ossConfig
+	RedisConfig   redisConfig
+	MySQLConfig   mysqlConfig
+	OssConfig     ossConfig
+	MongoDbConfig mongoConfig
 )
 
 // Redis配置
@@ -34,6 +36,18 @@ type ossConfig struct {
 	SecretAccessKey string // 密码
 	BucketName      string // 桶名称
 	UseSsl          bool   // 是否使用SSL
+}
+
+type mongoConfig struct {
+	Host     string // 地址
+	Port     int    // 端口
+	Username string // 用户名
+	Password string // 密码
+	DbName   string // 数据库名称
+}
+
+func (c mongoConfig) GetClientUri() string {
+	return fmt.Sprintf("mongodb://%v:%v@%v:%v/%v", c.Username, c.Password, c.Host, c.Port, c.DbName)
 }
 
 // InitRedisConfig 初始化Redis配置
@@ -70,4 +84,15 @@ func InitOssConfig() {
 		BucketName:      bucketName,
 		UseSsl:          useSSL,
 	}
+}
+
+// InitMongoConfig 初始化MongoDB配置
+func InitMongoConfig() {
+	host := "10.0.0.30"
+	port := 27017
+	user := "lxh"
+	password := "suijimima123"
+	dbName := "web-wechat"
+
+	MongoDbConfig = mongoConfig{host, port, user, password, dbName}
 }

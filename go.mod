@@ -13,6 +13,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.12
 	github.com/robfig/cron v1.2.0
 	github.com/ugorji/go v1.2.6 // indirect
+	go.mongodb.org/mongo-driver v1.7.1
 	go.uber.org/zap v1.18.1
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
