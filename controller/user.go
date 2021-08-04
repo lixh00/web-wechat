@@ -45,7 +45,7 @@ func GetCurrentUserInfoHandle(ctx *gin.Context) {
 
 	logger.Log.Infof("登录用户：%v", user.NickName)
 	// TODO 这儿的返回数据后面改成struct
-	core.OkWithData(map[string]string{"nickName": user.NickName, "nin": strconv.Itoa(user.Uin)}, ctx)
+	core.OkWithData(map[string]string{"nickName": user.NickName, "uin": strconv.Itoa(user.Uin)}, ctx)
 }
 
 // GetFriendsListHandle 获取好友列表
