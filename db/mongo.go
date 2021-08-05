@@ -4,6 +4,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 	"web-wechat/core"
 	"web-wechat/logger"
 )
@@ -14,19 +15,23 @@ var mongoClient *mongo.Client
 func InitMongoConnHandle() {
 	// 读取配置
 	core.InitMongoConfig()
-	client, err := mongo.NewClient(options.Client().ApplyURI(core.MongoDbConfig.GetClientUri()))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel() // 在调用WithTimeout之后defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(core.MongoDbConfig.GetClientUri()))
 	if err != nil {
 		logger.Log.Panicf("MongoDB初始化连接失败: %v", err.Error())
 		//os.Exit(1)
-	} else {
-		logger.Log.Info("MongoDB连接初始化成功")
-		mongoClient = client
 	}
+	logger.Log.Info("MongoDB连接初始化成功")
+	mongoClient = client
 }
 
 // SaveToMongo 保存数据到Mongo
 func SaveToMongo(data interface{}, tableName string) bool {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel() // 在调用WithTimeout之后defer cancel()
+
 	collection := mongoClient.Database(core.MongoDbConfig.DbName).Collection(tableName)
 	res, err := collection.InsertOne(ctx, data)
 	if err != nil {

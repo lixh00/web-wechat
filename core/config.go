@@ -90,7 +90,7 @@ func InitOssConfig() {
 func InitMongoConfig() {
 	host := "10.0.0.30"
 	port := 27017
-	user := "lxh"
+	user := "wechat"
 	password := "suijimima123"
 	dbName := "web-wechat"
 
