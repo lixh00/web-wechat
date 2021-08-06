@@ -103,6 +103,7 @@ func emoticonMessageHandle(ctx *openwechat.MessageContext) {
 				if flag {
 					fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
 					logger.Log.Infof("表情包保存成功，图片链接: %v", fileUrl)
+					ctx.Content = fileUrl
 				} else {
 					logger.Log.Error("表情包保存失败")
 				}

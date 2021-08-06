@@ -9,7 +9,7 @@ import (
 
 // 检查是否需要保存
 func checkNeedSave(message *openwechat.Message) bool {
-	return message.IsText()
+	return message.IsText() || message.IsEmoticon() || message.IsPicture() || message.IsMedia()
 }
 
 // 保存消息到MongoDB
