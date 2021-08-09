@@ -80,17 +80,18 @@ func UpdateHotLoginData() {
 func dealUpdateHotLoginData() {
 	for key, bot := range wechatBots {
 		if bot.Alive() {
+			user, _ := bot.GetCurrentUser()
 			// 判断是否需要热登录
 			if checkHotLogin(key) {
 				storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
 				if err := bot.HotLogin(storage, false); err != nil {
-					logger.Log.Errorf("定时热登录失败: %v", err)
+					logger.Log.Errorf("[%v]定时热登录失败: %v", user.NickName, err)
 					continue
 				}
+				logger.Log.Debugf("[%v]热登录成功", user.NickName)
 			} else {
-				logger.Log.Debugf("到期时间大于11小时，暂不重新登录")
+				logger.Log.Debugf("[%v]到期时间大于11小时，暂不重新登录", user.NickName)
 			}
-			user, _ := bot.GetCurrentUser()
 			if err := bot.DumpHotReloadStorage(); err != nil {
 				logger.Log.Errorf("【%v】更新热登录数据失败，错误信息: %v", user.NickName, err)
 			}
@@ -175,6 +176,9 @@ func checkHotLogin(appKey string) bool {
 					expiresLocalTime := expiresGMTTime.In(loc2)
 					//logger.Log.Debugf("登录有效到期时间: %v", expiresLocalTime)
 					overHours := expiresLocalTime.Sub(time.Now().In(loc2)).Hours()
+					if overHours < 1 {
+						logger.Log.Errorf("[%v]状态异常", appKey)
+					}
 					logger.Log.Debugf("[%v]距离到期时间还剩 %v 小时", appKey, overHours)
 					// 小于11小时就返回true，表示需要热登录
 					return overHours < 11
