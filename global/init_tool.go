@@ -27,7 +27,7 @@ func InitBotWithStart() {
 			if err := db.DelRedis(key); err != nil {
 				logger.Log.Errorf("[%v] Redis缓存删除失败，错误信息：%v", key, err.Error())
 			}
-			return
+			continue
 		}
 		loginUser, _ := bot.GetCurrentUser()
 		logger.Log.Infof("[%v]初始化自动登录成功，用户名：%v", appKey, loginUser.NickName)
