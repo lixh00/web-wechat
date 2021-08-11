@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"web-wechat/core"
-	"web-wechat/db"
+	. "web-wechat/db"
 	"web-wechat/global"
 	"web-wechat/logger"
 	"web-wechat/middleware"
@@ -32,10 +32,10 @@ func main() {
 	oss.InitOssConnHandle()
 
 	// 初始化MongoDB
-	db.InitMongoConnHandle()
+	InitMongoConnHandle()
 
 	// 初始化Redis连接
-	db.InitRedisConnHandle()
+	InitRedisConnHandle()
 
 	// 初始化Redis里登录的数据
 	global.InitBotWithStart()

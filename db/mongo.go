@@ -9,7 +9,11 @@ import (
 	"web-wechat/logger"
 )
 
-var mongoClient *mongo.Client
+type mongoDBClient struct {
+	client *mongo.Client
+}
+
+var MongoClient mongoDBClient
 
 // InitMongoConnHandle 初始化MongoDB连接
 func InitMongoConnHandle() {
@@ -24,15 +28,16 @@ func InitMongoConnHandle() {
 		//os.Exit(1)
 	}
 	logger.Log.Info("MongoDB连接初始化成功")
-	mongoClient = client
+	//mongoClient = client
+	MongoClient = mongoDBClient{client: client}
 }
 
-// SaveToMongo 保存数据到Mongo
-func SaveToMongo(data interface{}, tableName string) bool {
+// Save 保存数据到Mongo
+func (m *mongoDBClient) Save(data interface{}, tableName string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel() // 在调用WithTimeout之后defer cancel()
 
-	collection := mongoClient.Database(core.MongoDbConfig.DbName).Collection(tableName)
+	collection := m.client.Database(core.MongoDbConfig.DbName).Collection(tableName)
 	res, err := collection.InsertOne(ctx, data)
 	if err != nil {
 		logger.Log.Errorf("保存数据到MongoDB失败: %v", err.Error())

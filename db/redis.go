@@ -9,8 +9,12 @@ import (
 	"web-wechat/logger"
 )
 
-// RedisConn Redis连接对象
-var redisConn redis.Conn
+// Redis连接对象
+type redisConn struct {
+	client redis.Conn
+}
+
+var RedisClient redisConn
 
 // InitRedisConnHandle 初始化Redis连接对象
 func InitRedisConnHandle() {
@@ -33,43 +37,45 @@ func InitRedisConnHandle() {
 		//os.Exit(1)
 	} else {
 		logger.Log.Info("Redis连接初始化成功")
-		redisConn = conn
+		RedisClient = redisConn{
+			client: conn,
+		}
 	}
 
 	//defer c.Close()
 }
 
-// GetRedis 获取数据
-func GetRedis(key string) (string, error) {
-	return redis.String(redisConn.Do("get", key))
+// GetData 获取数据
+func (r *redisConn) GetData(key string) (string, error) {
+	return redis.String(r.client.Do("get", key))
 }
 
-// GetRedisKeys 获取key列表
-func GetRedisKeys(key string) ([]string, error) {
-	return redis.Strings(redisConn.Do("keys", key))
+// GetKeys 获取key列表
+func (r *redisConn) GetKeys(key string) ([]string, error) {
+	return redis.Strings(r.client.Do("keys", key))
 }
 
-// SetRedis 保存数据
-func SetRedis(key string, value string) error {
-	_, err := redisConn.Do("set", key, value)
+// Set 保存数据
+func (r *redisConn) Set(key string, value string) error {
+	_, err := r.client.Do("set", key, value)
 	if err != nil {
 		return errors.New("Redis保存数据失败")
 	}
 	return nil
 }
 
-// SetRedisWithTimeout 保存带过期时间的数据(单位：秒)
-func SetRedisWithTimeout(key string, value string, timeout string) error {
-	_, err := redisConn.Do("set", key, value, "EX", timeout)
+// SetWithTimeout 保存带过期时间的数据(单位：秒)
+func (r *redisConn) SetWithTimeout(key string, value string, timeout string) error {
+	_, err := r.client.Do("set", key, value, "EX", timeout)
 	if err != nil {
 		return errors.New("Redis保存数据失败")
 	}
 	return nil
 }
 
-// DelRedis 根据key删除Redis数据
-func DelRedis(key string) error {
-	_, err := redisConn.Do("DEL", key)
+// Del 根据key删除Redis数据
+func (r *redisConn) Del(key string) error {
+	_, err := r.client.Do("DEL", key)
 	if err != nil {
 		return err
 	}

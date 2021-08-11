@@ -1,14 +1,14 @@
 package global
 
 import (
-	"web-wechat/db"
+	. "web-wechat/db"
 	"web-wechat/logger"
 	"web-wechat/protocol"
 )
 
 // InitBotWithStart 系统启动的时候从Redis加载登录信息自动登录
 func InitBotWithStart() {
-	keys, err := db.GetRedisKeys("wechat:login:*")
+	keys, err := RedisClient.GetKeys("wechat:login:*")
 	if err != nil {
 		logger.Log.Error("获取Key失败")
 		return
@@ -24,7 +24,7 @@ func InitBotWithStart() {
 		if err := bot.HotLogin(storage, false); err != nil {
 			logger.Log.Infof("[%v] 热登录失败，错误信息：%v", appKey, err.Error())
 			// 登录失败，删除热登录数据
-			if err := db.DelRedis(key); err != nil {
+			if err := RedisClient.Del(key); err != nil {
 				logger.Log.Errorf("[%v] Redis缓存删除失败，错误信息：%v", key, err.Error())
 			}
 			continue

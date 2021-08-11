@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/eatmoreapple/openwechat"
 	"time"
-	"web-wechat/db"
+	. "web-wechat/db"
 )
 
 // 检查是否需要保存
@@ -51,6 +51,6 @@ func saveToDb(ctx *openwechat.MessageContext) {
 		DateTime:     time.Now().In(time.FixedZone("CST", 8*3600)).Format("2006-01-02 15:04:05"),
 	}
 
-	db.SaveToMongo(msg, "message")
+	MongoClient.Save(msg, "message")
 	ctx.Next()
 }

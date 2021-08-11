@@ -6,7 +6,7 @@ import (
 	"errors"
 	. "github.com/eatmoreapple/openwechat"
 	"net/url"
-	"web-wechat/db"
+	. "web-wechat/db"
 	"web-wechat/logger"
 )
 
@@ -111,7 +111,7 @@ func (b *WechatBot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retr
 func (f *RedisHotReloadStorage) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
 		// 从Redis获取热登录数据
-		data, err := db.GetRedis(f.Key)
+		data, err := RedisClient.GetData(f.Key)
 		if err != nil {
 			logger.Log.Errorf("读取热登录数据失败: %v", err)
 			return 0, err
@@ -123,7 +123,7 @@ func (f *RedisHotReloadStorage) Read(p []byte) (n int, err error) {
 
 // Dump 重写更新热登录数据，保存到Redis
 func (f *RedisHotReloadStorage) Write(p []byte) (n int, err error) {
-	err = db.SetRedisWithTimeout(f.Key, string(p), "86400")
+	err = RedisClient.SetWithTimeout(f.Key, string(p), "86400")
 	if err != nil {
 		logger.Log.Errorf("保存微信热登录信息失败: %v", err.Error())
 		return 0, err
