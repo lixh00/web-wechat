@@ -28,7 +28,7 @@ func InitOssConnHandle() {
 	// 判断捅是否存在，不存在就创建
 	exists, err := client.BucketExists(ctx, core.OssConfig.BucketName)
 	if err != nil {
-		logger.Log.Errorf("判断桶失败: %v", err)
+		logger.Log.Panicf("判断桶失败: %v", err)
 	}
 	if !exists {
 		logger.Log.Info("桶不存在，开始创建")
