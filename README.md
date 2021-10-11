@@ -1,7 +1,5 @@
 ## WebWechat
 
-[![Build Status](https://drone.tk/api/badges/wechat/web-wechat/status.svg)](https://drone.tk/wechat/web-wechat)
-
 基于`Golang`语言和`Gin`框架的个人微信系统
 
 ## 使用方式
