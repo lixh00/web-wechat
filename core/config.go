@@ -88,11 +88,11 @@ func InitOssConfig() {
 
 // InitMongoConfig 初始化MongoDB配置
 func InitMongoConfig() {
-	host := "10.0.0.30"
-	port := 27017
-	user := "wechat"
-	password := "suijimima123"
-	dbName := "web-wechat"
+	host := utils.GetEnvVal("MONGO_HOST", "wechat_mongo")
+	port := utils.GetEnvIntVal("MONGO_PORT", 27017)
+	user := utils.GetEnvVal("MONGO_USER", "wechat")
+	password := utils.GetEnvVal("MONGO_PWD", "wechat")
+	dbName := utils.GetEnvVal("MONGO_DB", "web-wechat")
 
 	MongoDbConfig = mongoConfig{host, port, user, password, dbName}
 }
