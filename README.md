@@ -22,3 +22,7 @@ docker compose up -d
 # 或者
 docker-compose up -d
 ```
+
+## Thanks
+
+<a href="https://www.jetbrains.com/?from=openwechat"><img src="https://account.jetbrains.com/static/images/jetbrains-logo-inv.svg" height="200" alt="JetBrains"/></a>
