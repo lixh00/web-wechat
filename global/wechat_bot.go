@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/robfig/cron"
-	"sync/atomic"
 	"time"
 	. "web-wechat/db"
 	"web-wechat/handler"
@@ -47,15 +46,15 @@ func InitWechatBotHandle() *protocol.WechatBot {
 	bot := openwechat.DefaultBot(openwechat.Desktop)
 
 	// 定义读取消息错误回调函数
-	var getMessageErrorCount int32
-	bot.GetMessageErrorHandler = func(err error) {
-		atomic.AddInt32(&getMessageErrorCount, 1)
-		// 如果发生了三次错误,那么直接退出
-		if getMessageErrorCount == 3 {
-			logger.Log.Errorf("获取消息发生错误达到三次，直接退出。错误信息：%v", err.Error())
-			_ = bot.Logout()
-		}
-	}
+	//var getMessageErrorCount int32
+	//bot.GetMessageErrorHandler = func(err error) {
+	//	atomic.AddInt32(&getMessageErrorCount, 1)
+	//	// 如果发生了三次错误,那么直接退出
+	//	if getMessageErrorCount == 3 {
+	//		logger.Log.Errorf("获取消息发生错误达到三次，直接退出。错误信息：%v", err.Error())
+	//		_ = bot.Logout()
+	//	}
+	//}
 	// 注册消息处理函数
 	handler.HandleMessage(bot)
 	// 获取消息发生错误

@@ -66,9 +66,9 @@ func (b *WechatBot) LoginWithUUID(uuid string) error {
 	}
 }
 
-// HotLoginWithUUID 根据UUID热登录
+// HotLoginWithUUID 根据UUID热登录 TODO 这儿需要优化，不太能用的亚子
 func (b *WechatBot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retry ...bool) error {
-	b.IsHot = true
+	//b.IsHot = true
 	b.HotReloadStorage = storage
 
 	var err error

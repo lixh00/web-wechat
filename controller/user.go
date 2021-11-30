@@ -10,7 +10,7 @@ import (
 
 // 返回用户信息包装类
 type responseUserInfo struct {
-	Uin         int                `json:"uin"`          // 用户唯一ID
+	Uin         int64              `json:"uin"`          // 用户唯一ID
 	Sex         int                `json:"sex"`          // 性别
 	Province    string             `json:"province"`     // 省
 	City        string             `json:"city"`         // 市
