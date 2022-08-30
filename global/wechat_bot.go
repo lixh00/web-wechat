@@ -3,12 +3,12 @@ package global
 import (
 	"encoding/json"
 	"errors"
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/robfig/cron"
 	"time"
 	. "web-wechat/db"
 	"web-wechat/handler"
-	"web-wechat/logger"
 	"web-wechat/protocol"
 )
 
@@ -51,7 +51,7 @@ func InitWechatBotHandle() *protocol.WechatBot {
 	//	atomic.AddInt32(&getMessageErrorCount, 1)
 	//	// 如果发生了三次错误,那么直接退出
 	//	if getMessageErrorCount == 3 {
-	//		logger.Log.Errorf("获取消息发生错误达到三次，直接退出。错误信息：%v", err.Error())
+	//		log.Errorf("获取消息发生错误达到三次，直接退出。错误信息：%v", err.Error())
 	//		_ = bot.Logout()
 	//	}
 	//}
@@ -84,17 +84,17 @@ func dealUpdateHotLoginData() {
 			if checkHotLogin(key) {
 				storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
 				if err := bot.HotLogin(storage, false); err != nil {
-					logger.Log.Errorf("[%v]定时热登录失败: %v", user.NickName, err)
+					log.Errorf("[%v]定时热登录失败: %v", user.NickName, err)
 					continue
 				}
-				logger.Log.Debugf("[%v]热登录成功", user.NickName)
+				log.Debugf("[%v]热登录成功", user.NickName)
 			} else {
-				logger.Log.Debugf("[%v]到期时间大于11小时，暂不重新登录", user.NickName)
+				log.Debugf("[%v]到期时间大于11小时，暂不重新登录", user.NickName)
 			}
 			if err := bot.DumpHotReloadStorage(); err != nil {
-				logger.Log.Errorf("【%v】更新热登录数据失败，错误信息: %v", user.NickName, err)
+				log.Errorf("【%v】更新热登录数据失败，错误信息: %v", user.NickName, err)
 			}
-			logger.Log.Infof("【%v】热登录数据更新成功", user.NickName)
+			log.Infof("【%v】热登录数据更新成功", user.NickName)
 		}
 		continue
 	}
@@ -112,15 +112,15 @@ func KeepAliveHandle() {
 				user, _ := bot.GetCurrentUser()
 				file, err := user.FileHelper()
 				if err != nil {
-					logger.Log.Errorf("获取文件助手失败 ====> %v", err.Error())
+					log.Errorf("获取文件助手失败 ====> %v", err.Error())
 					continue
 				}
 				if _, err := file.SendText(openwechat.ZombieText); err != nil {
-					logger.Log.Errorf("【%v】保活失败 ====> %v", user.NickName, err.Error())
+					log.Errorf("【%v】保活失败 ====> %v", user.NickName, err.Error())
 					errKey = append(errKey, k)
 					continue
 				}
-				logger.Log.Infof("【%v】保活成功", user.NickName)
+				log.Infof("【%v】保活成功", user.NickName)
 			}
 			continue
 		}
@@ -130,10 +130,10 @@ func KeepAliveHandle() {
 			bot := GetBot(key)
 			storage := protocol.NewRedisHotReloadStorage("wechat:login:" + key)
 			if err := bot.HotLogin(storage, false); err != nil {
-				logger.Log.Errorf("[%v] 热登录失败，错误信息：%v", key, err.Error())
+				log.Errorf("[%v] 热登录失败，错误信息：%v", key, err.Error())
 				// 登录失败，删除热登录数据
 				if err := RedisClient.Del(key); err != nil {
-					logger.Log.Errorf("[%v] Redis缓存删除失败，错误信息：%v", key, err.Error())
+					log.Errorf("[%v] Redis缓存删除失败，错误信息：%v", key, err.Error())
 				}
 				delete(wechatBots, key)
 			} else {
@@ -152,7 +152,7 @@ func KeepAliveHandle() {
 func checkHotLogin(appKey string) bool {
 	jsonStr, err := RedisClient.GetData("wechat:login:" + appKey)
 	if err != nil {
-		logger.Log.Errorf("热登录数据获取失败: %v", err)
+		log.Errorf("热登录数据获取失败: %v", err)
 		return false
 	}
 	// 热登录数据转化为实体
@@ -160,25 +160,25 @@ func checkHotLogin(appKey string) bool {
 	// 反序列化热登录数据
 	err = json.Unmarshal([]byte(jsonStr), &hotLoginData)
 	if err != nil {
-		logger.Log.Errorf("反序列化热登录数据失败: %v", err)
+		log.Errorf("反序列化热登录数据失败: %v", err)
 		return false
 	}
 
 	for _, cookies := range hotLoginData.Cookies {
 		if len(cookies) > 0 {
-			//logger.Log.Debugf("保存的Cookie值: %v", cookies)
+			//log.Debugf("保存的Cookie值: %v", cookies)
 			for _, cookie := range cookies {
 				if cookie.Name == "wxsid" {
 					loc, _ := time.LoadLocation("GMT")
 					expiresGMTTime, _ := time.ParseInLocation("Mon, 02-Jan-2006 15:04:05 GMT", cookie.RawExpires, loc)
 					loc2, _ := time.LoadLocation("Local")
 					expiresLocalTime := expiresGMTTime.In(loc2)
-					//logger.Log.Debugf("登录有效到期时间: %v", expiresLocalTime)
+					//log.Debugf("登录有效到期时间: %v", expiresLocalTime)
 					overHours := expiresLocalTime.Sub(time.Now().In(loc2)).Hours()
 					if overHours < 1 {
-						logger.Log.Errorf("[%v]状态异常", appKey)
+						log.Errorf("[%v]状态异常", appKey)
 					}
-					logger.Log.Debugf("[%v]距离到期时间还剩 %v 小时", appKey, overHours)
+					log.Debugf("[%v]距离到期时间还剩 %v 小时", appKey, overHours)
 					// 小于11小时就返回true，表示需要热登录
 					return overHours < 11
 				}

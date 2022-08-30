@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"gitee.ltd/lxh/logger/log"
 	. "github.com/eatmoreapple/openwechat"
 	"net/url"
 	. "web-wechat/db"
-	"web-wechat/logger"
 )
 
 type WechatBot struct {
@@ -44,7 +44,7 @@ func (b *WechatBot) LoginWithUUID(uuid string) error {
 		if err != nil {
 			return err
 		}
-		//logger.Log.Infof("CheckLogin: %v ==> %v", resp.Code, string(resp.Raw))
+		//log.Infof("CheckLogin: %v ==> %v", resp.Code, string(resp.Raw))
 		switch resp.Code {
 		case StatusSuccess:
 			// 判断是否有登录回调，如果有执行它
@@ -113,7 +113,7 @@ func (f *RedisHotReloadStorage) Read(p []byte) (n int, err error) {
 		// 从Redis获取热登录数据
 		data, err := RedisClient.GetData(f.Key)
 		if err != nil {
-			logger.Log.Errorf("读取热登录数据失败: %v", err)
+			log.Errorf("读取热登录数据失败: %v", err)
 			return 0, err
 		}
 		f.reader = bytes.NewReader([]byte(data))
@@ -125,7 +125,7 @@ func (f *RedisHotReloadStorage) Read(p []byte) (n int, err error) {
 func (f *RedisHotReloadStorage) Write(p []byte) (n int, err error) {
 	err = RedisClient.SetWithTimeout(f.Key, string(p), "86400")
 	if err != nil {
-		logger.Log.Errorf("保存微信热登录信息失败: %v", err.Error())
+		log.Errorf("保存微信热登录信息失败: %v", err.Error())
 		return 0, err
 	}
 	return len(p), nil

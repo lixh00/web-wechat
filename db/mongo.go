@@ -2,11 +2,11 @@ package db
 
 import (
 	"context"
+	"gitee.ltd/lxh/logger/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 	"web-wechat/core"
-	"web-wechat/logger"
 )
 
 type mongoDBClient struct {
@@ -24,10 +24,10 @@ func InitMongoConnHandle() {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(core.MongoDbConfig.GetClientUri()))
 	if err != nil {
-		logger.Log.Panicf("MongoDB初始化连接失败: %v", err.Error())
+		log.Panicf("MongoDB初始化连接失败: %v", err.Error())
 		//os.Exit(1)
 	}
-	logger.Log.Info("MongoDB连接初始化成功")
+	log.Info("MongoDB连接初始化成功")
 	//mongoClient = client
 	MongoClient = mongoDBClient{client: client}
 }
@@ -40,9 +40,9 @@ func (m *mongoDBClient) Save(data interface{}, tableName string) bool {
 	collection := m.client.Database(core.MongoDbConfig.DbName).Collection(tableName)
 	res, err := collection.InsertOne(ctx, data)
 	if err != nil {
-		logger.Log.Errorf("保存数据到MongoDB失败: %v", err.Error())
+		log.Errorf("保存数据到MongoDB失败: %v", err.Error())
 		return false
 	}
-	logger.Log.Debugf("MongoDB保存结果: %v", res)
+	log.Debugf("MongoDB保存结果: %v", res)
 	return true
 }

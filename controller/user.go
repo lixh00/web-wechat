@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/gin-gonic/gin"
 	"web-wechat/core"
 	"web-wechat/global"
-	"web-wechat/logger"
 )
 
 // 返回用户信息包装类
@@ -42,7 +42,7 @@ func GetCurrentUserInfoHandle(ctx *gin.Context) {
 		return
 	}
 
-	logger.Log.Infof("登录用户：%v", user.NickName)
+	log.Infof("登录用户：%v", user.NickName)
 	userDataVO := responseUserInfo{
 		Uin:         user.Uin,
 		Sex:         user.Sex,

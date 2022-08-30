@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"web-wechat/core"
-	"web-wechat/logger"
 	"web-wechat/oss"
 )
 
@@ -66,27 +66,27 @@ func emoticonMessageHandle(ctx *openwechat.MessageContext) {
 
 	// 判断消息是不是表情商店的，如果是，不支持解析
 	if !strings.Contains(ctx.Content, "<msg>") {
-		logger.Log.Debugf("原始数据: %v", ctx.Content)
-		logger.Log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：「收到了一个表情，请在手机上查看」", senderUser)
+		log.Debugf("原始数据: %v", ctx.Content)
+		log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：「收到了一个表情，请在手机上查看」", senderUser)
 	} else {
 		// 解析表情包
 		var data EmoticonMessageData
 		if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
-			logger.Log.Errorf("消息解析失败: %v", err.Error())
-			logger.Log.Debugf("原始内容: %v", ctx.Content)
+			log.Errorf("消息解析失败: %v", err.Error())
+			log.Debugf("原始内容: %v", ctx.Content)
 			return
 		} else {
-			logger.Log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：%v", senderUser, data.Emoji.Md5)
+			log.Infof("[收到新表情包消息] == 发信人：%v ==> 内容：%v", senderUser, data.Emoji.Md5)
 			// 下载图片资源
 			fileResp, err := ctx.GetFile()
 			if err != nil {
-				logger.Log.Errorf("表情包下载失败: %v", err.Error())
+				log.Errorf("表情包下载失败: %v", err.Error())
 				return
 			}
 			defer fileResp.Body.Close()
 			imgFileByte, err := ioutil.ReadAll(fileResp.Body)
 			if err != nil {
-				logger.Log.Errorf("表情包读取错误: %v", err.Error())
+				log.Errorf("表情包读取错误: %v", err.Error())
 				return
 			} else {
 				// 读取文件相关信息
@@ -102,10 +102,10 @@ func emoticonMessageHandle(ctx *openwechat.MessageContext) {
 				flag := oss.SaveToOss(reader2, contentType, fileName)
 				if flag {
 					fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
-					logger.Log.Infof("表情包保存成功，图片链接: %v", fileUrl)
+					log.Infof("表情包保存成功，图片链接: %v", fileUrl)
 					ctx.Content = fileUrl
 				} else {
-					logger.Log.Error("表情包保存失败")
+					log.Error("表情包保存失败")
 				}
 			}
 		}

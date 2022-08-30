@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
 	"io/ioutil"
 	"net/http"
 	"web-wechat/core"
-	"web-wechat/logger"
 	"web-wechat/oss"
 )
 
@@ -77,28 +77,28 @@ func appMessageHandle(ctx *openwechat.MessageContext) {
 	// 解析文件
 	var data AppMessageData
 	if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
-		logger.Log.Errorf("消息解析失败: %v", err.Error())
-		logger.Log.Debugf("原始内容: %v", ctx.Content)
+		log.Errorf("消息解析失败: %v", err.Error())
+		log.Debugf("原始内容: %v", ctx.Content)
 		return
 	} else {
-		logger.Log.Infof("[收到新文件消息] == 发信人：%v ==> Type：%v ==> 标题：%v ==> 来源APP: %v",
+		log.Infof("[收到新文件消息] == 发信人：%v ==> Type：%v ==> 标题：%v ==> 来源APP: %v",
 			senderUser, data.Appmsg.Type, data.Appmsg.Title, data.Appinfo.Appname)
 		tt := data.Appmsg.Type
 		dealType := []string{"2", "3", "4", "6", "15"}
 		if !checkIsExist(dealType, tt) {
-			logger.Log.Infof("奇奇怪怪的未定义处理类型，跳过处理。类型: %v", tt)
+			log.Infof("奇奇怪怪的未定义处理类型，跳过处理。类型: %v", tt)
 			return
 		}
 		// 下载图片资源
 		fileResp, err := ctx.GetFile()
 		if err != nil {
-			logger.Log.Errorf("文件下载失败: %v", err.Error())
+			log.Errorf("文件下载失败: %v", err.Error())
 			return
 		}
 		defer fileResp.Body.Close()
 		imgFileByte, err := ioutil.ReadAll(fileResp.Body)
 		if err != nil {
-			logger.Log.Errorf("文件读取错误: %v", err.Error())
+			log.Errorf("文件读取错误: %v", err.Error())
 			return
 		} else {
 			// 读取文件相关信息
@@ -113,10 +113,10 @@ func appMessageHandle(ctx *openwechat.MessageContext) {
 			flag := oss.SaveToOss(reader2, contentType, fileName)
 			if flag {
 				fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
-				logger.Log.Infof("文件保存成功，文件链接: %v", fileUrl)
+				log.Infof("文件保存成功，文件链接: %v", fileUrl)
 				ctx.Content = fileUrl
 			} else {
-				logger.Log.Error("文件保存失败")
+				log.Error("文件保存失败")
 			}
 		}
 	}

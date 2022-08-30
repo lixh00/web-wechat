@@ -5,7 +5,6 @@ import (
 	"web-wechat/core"
 	. "web-wechat/db"
 	"web-wechat/global"
-	"web-wechat/logger"
 	"web-wechat/middleware"
 	"web-wechat/oss"
 	"web-wechat/route"
@@ -13,8 +12,6 @@ import (
 
 // 程序启动入口
 func main() {
-	// 初始化日志
-	logger.InitLogger()
 	// 初始化Gin
 	app := gin.Default()
 

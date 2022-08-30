@@ -1,14 +1,14 @@
 package core
 
 import (
+	"gitee.ltd/lxh/logger/log"
 	"github.com/gin-gonic/gin"
-	"web-wechat/logger"
 )
 
 // CustomHTTPErrorHandler 默认全局异常处理
 func CustomHTTPErrorHandler() gin.HandlerFunc {
 	//ctx.Logger().Error(err.Error())
-	logger.Log.Error("粗现异常啦~")
+	log.Error("粗现异常啦~")
 	//_ = FailWithMessage(err.Error(), ctx)
 	return func(ctx *gin.Context) {
 		FailWithMessage("不知道出了啥异常", ctx)
