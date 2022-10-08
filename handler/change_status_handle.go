@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
-	"web-wechat/logger"
 )
 
 func checkIsCanRead(message *openwechat.Message) bool {
@@ -14,7 +14,7 @@ func checkIsCanRead(message *openwechat.Message) bool {
 func setTheMessageAsRead(ctx *openwechat.MessageContext) {
 	err := ctx.AsRead()
 	if err != nil {
-		logger.Log.Errorf("设置消息为已读出错: %v", err)
+		log.Errorf("设置消息为已读出错: %v", err)
 	}
 	ctx.Next()
 }

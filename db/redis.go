@@ -3,10 +3,10 @@ package db
 import (
 	"errors"
 	"fmt"
+	"gitee.ltd/lxh/logger/log"
 	"github.com/garyburd/redigo/redis"
 	"time"
 	"web-wechat/core"
-	"web-wechat/logger"
 )
 
 // Redis连接对象
@@ -33,10 +33,10 @@ func InitRedisConnHandle() {
 		redis.DialReadTimeout(1*time.Second),
 		redis.DialWriteTimeout(1*time.Second))
 	if err != nil {
-		logger.Log.Panicf("Redis初始化连接失败: %v", err.Error())
+		log.Panicf("Redis初始化连接失败: %v", err.Error())
 		//os.Exit(1)
 	} else {
-		logger.Log.Info("Redis连接初始化成功")
+		log.Info("Redis连接初始化成功")
 		RedisClient = redisConn{
 			client: conn,
 		}

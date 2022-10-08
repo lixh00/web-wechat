@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/gin-gonic/gin"
 	"web-wechat/core"
 	"web-wechat/global"
-	"web-wechat/logger"
 	"web-wechat/protocol"
 )
 
@@ -57,28 +57,28 @@ func LoginHandle(ctx *gin.Context) {
 
 	// 已扫码回调
 	bot.ScanCallBack = func(body []byte) {
-		logger.Log.Infof("[%v]已扫码", appKey)
+		log.Infof("[%v]已扫码", appKey)
 	}
 
 	// 设置登录成功回调
 	bot.LoginCallBack = func(body []byte) {
-		logger.Log.Infof("[%v]登录成功", appKey)
+		log.Infof("[%v]登录成功", appKey)
 	}
 
 	// 热登录
 	storage := protocol.NewRedisHotReloadStorage("wechat:login:" + appKey)
 	if err := bot.HotLoginWithUUID(uuid, storage, true); err != nil {
-		logger.Log.Errorf("热登录失败: %v", err)
+		log.Errorf("热登录失败: %v", err)
 		core.FailWithMessage("登录失败："+err.Error(), ctx)
 		return
 	}
 
 	user, err := bot.GetCurrentUser()
 	if err != nil {
-		logger.Log.Errorf("获取登录用户信息失败: %v", err.Error())
+		log.Errorf("获取登录用户信息失败: %v", err.Error())
 		core.FailWithMessage("获取登录用户信息失败："+err.Error(), ctx)
 		return
 	}
-	logger.Log.Infof("当前登录用户：%v", user.NickName)
+	log.Infof("当前登录用户：%v", user.NickName)
 	core.OkWithMessage("登录成功", ctx)
 }
