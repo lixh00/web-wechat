@@ -55,6 +55,31 @@ func InitWechatBotHandle() *protocol.WechatBot {
 	//		_ = bot.Logout()
 	//	}
 	//}
+
+	// 设置心跳回调
+	bot.SyncCheckCallback = func(resp openwechat.SyncCheckResponse) {
+		if resp.RetCode == "1100" {
+			log.Errorf("微信已退出")
+			// do something
+		}
+		switch resp.Selector {
+		case "0":
+			log.Debugf("正常")
+		case "2", "6":
+			log.Debugf("有新消息")
+		case "7":
+			log.Debugf("进入/离开聊天界面")
+			err := bot.WebInit()
+			if err != nil {
+				// 短信通知一下
+				// do something
+				//log.Panicf("重新初始化失败: %v", err)
+			}
+		default:
+			log.Debugf("RetCode: %s  Selector: %s", resp.RetCode, resp.Selector)
+		}
+	}
+
 	// 注册消息处理函数
 	handler.HandleMessage(bot)
 	// 获取消息发生错误

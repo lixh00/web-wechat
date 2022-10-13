@@ -76,7 +76,7 @@ func (b *WechatBot) HotLoginWithUUID(uuid string, storage HotReloadStorage, retr
 	// 如果load出错了,就执行正常登陆逻辑
 	// 第一次没有数据load都会出错的
 	var buffer bytes.Buffer
-	if _, err := buffer.ReadFrom(storage); err != nil {
+	if _, err = buffer.ReadFrom(storage); err != nil {
 		return b.LoginWithUUID(uuid)
 	}
 

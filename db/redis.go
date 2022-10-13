@@ -18,16 +18,14 @@ var RedisClient redisConn
 
 // InitRedisConnHandle 初始化Redis连接对象
 func InitRedisConnHandle() {
-	// 读取配置
-	core.InitRedisConfig()
 	// 初始化连接
 	conn, err := redis.Dial("tcp",
 		// Redis连接信息
-		fmt.Sprintf("%s:%s", core.RedisConfig.Host, core.RedisConfig.Port),
+		fmt.Sprintf("%s:%s", core.SystemConfig.RedisConfig.Host, core.SystemConfig.RedisConfig.Port),
 		// 密码
-		redis.DialPassword(core.RedisConfig.Password),
+		redis.DialPassword(core.SystemConfig.RedisConfig.Password),
 		// 默认使用数据库
-		redis.DialDatabase(core.RedisConfig.Db),
+		redis.DialDatabase(core.SystemConfig.RedisConfig.Db),
 		redis.DialKeepAlive(1*time.Second),
 		redis.DialConnectTimeout(5*time.Second),
 		redis.DialReadTimeout(1*time.Second),

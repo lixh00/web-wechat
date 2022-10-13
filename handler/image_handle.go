@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"web-wechat/core"
@@ -64,7 +64,7 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 		return
 	}
 	defer fileResp.Body.Close()
-	imgFileByte, err := ioutil.ReadAll(fileResp.Body)
+	imgFileByte, err := io.ReadAll(fileResp.Body)
 	if err != nil {
 		log.Errorf("图片读取错误: %v", err.Error())
 		return
@@ -79,10 +79,10 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 		}
 
 		// 上传文件
-		reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
+		reader2 := io.NopCloser(bytes.NewReader(imgFileByte))
 		flag := oss.SaveToOss(reader2, contentType, fileName)
 		if flag {
-			fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
+			fileUrl := fmt.Sprintf("https://%v/%v/%v", core.SystemConfig.OssConfig.Endpoint, core.SystemConfig.OssConfig.BucketName, fileName)
 			log.Infof("图片保存成功，图片链接: %v", fileUrl)
 			ctx.Content = fileUrl
 		} else {

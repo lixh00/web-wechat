@@ -73,6 +73,13 @@ func LoginHandle(ctx *gin.Context) {
 		return
 	}
 
+	// 缓存登录信息
+	if err := bot.DumpHotReloadStorage(); err != nil {
+		log.Errorf("缓存登录信息失败: %v", err)
+		core.FailWithMessage("登录失败："+err.Error(), ctx)
+		return
+	}
+
 	user, err := bot.GetCurrentUser()
 	if err != nil {
 		log.Errorf("获取登录用户信息失败: %v", err.Error())

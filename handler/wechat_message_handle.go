@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/eatmoreapple/openwechat"
+	"web-wechat/plugins"
 )
 
 func HandleMessage(bot *openwechat.Bot) {
@@ -11,6 +12,9 @@ func HandleMessage(bot *openwechat.Bot) {
 	dispatcher.SetAsync(true)
 	// 处理消息为已读
 	dispatcher.RegisterHandler(checkIsCanRead, setTheMessageAsRead)
+
+	// 注册插件
+	dispatcher.RegisterHandler(plugins.WeChatPluginInstance.CheckIsOpen, plugins.WeChatPluginInstance.Command)
 
 	// 注册文本消息处理函数
 	dispatcher.OnText(textMessageHandle)

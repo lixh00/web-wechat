@@ -1,0 +1,30 @@
+# Redis配置
+redis:
+  host: 10.11.0.19
+  port: 6379
+  password: pGhQKwj7DE7FbFL1
+  db: 15
+
+# MySQL配置
+mysql:
+  host: localhost
+  port: 3306
+  username: root
+  password: null
+  database: null
+
+# MongoDB配置
+mongodb:
+  host: 10.11.0.10
+  port: 27017
+  username: lxh
+  password: admin123
+  database: web-wechat
+
+# OSS配置
+oss:
+  endpoint: play.min.io
+  accessKeyId: Q3AM3UQ867SPQQA43P2F
+  accessKeySecret: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+  bucket: web-wechat
+  ssl: true
