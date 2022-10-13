@@ -20,6 +20,6 @@ func ChangePluginStatus(isOpen bool) {
 }
 
 // CheckIsOpen 检查是否开启微信插件
-func (w weChatPlugin) CheckIsOpen(message *openwechat.Message) bool {
-	return w.isOpen
+func (p weChatPlugin) CheckIsOpen(message *openwechat.Message) bool {
+	return p.isOpen
 }
