@@ -13,7 +13,10 @@ func HandleMessage(bot *openwechat.Bot) {
 	// 处理消息为已读
 	dispatcher.RegisterHandler(checkIsCanRead, setTheMessageAsRead)
 
+	// 默认启用插件
+	plugins.ChangePluginStatus(true)
 	// 注册插件
+	//dispatcher.OnText(plugins.WeChatPluginInstance.Status) // 优先处理插件状态相关指令
 	dispatcher.RegisterHandler(plugins.WeChatPluginInstance.CheckIsOpen, plugins.WeChatPluginInstance.Command)
 
 	// 注册文本消息处理函数
