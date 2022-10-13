@@ -1,16 +1,16 @@
 package controller
 
 import (
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/gin-gonic/gin"
 	"web-wechat/core"
 	"web-wechat/global"
-	"web-wechat/logger"
 )
 
 // 返回用户信息包装类
 type responseUserInfo struct {
-	Uin         int                `json:"uin"`          // 用户唯一ID
+	Uin         int64              `json:"uin"`          // 用户唯一ID
 	Sex         int                `json:"sex"`          // 性别
 	Province    string             `json:"province"`     // 省
 	City        string             `json:"city"`         // 市
@@ -42,7 +42,7 @@ func GetCurrentUserInfoHandle(ctx *gin.Context) {
 		return
 	}
 
-	logger.Log.Infof("登录用户：%v", user.NickName)
+	log.Infof("登录用户：%v", user.NickName)
 	userDataVO := responseUserInfo{
 		Uin:         user.Uin,
 		Sex:         user.Sex,

@@ -3,10 +3,10 @@ package db
 import (
 	"errors"
 	"fmt"
+	"gitee.ltd/lxh/logger/log"
 	"github.com/garyburd/redigo/redis"
 	"time"
 	"web-wechat/core"
-	"web-wechat/logger"
 )
 
 // Redis连接对象
@@ -18,25 +18,23 @@ var RedisClient redisConn
 
 // InitRedisConnHandle 初始化Redis连接对象
 func InitRedisConnHandle() {
-	// 读取配置
-	core.InitRedisConfig()
 	// 初始化连接
 	conn, err := redis.Dial("tcp",
 		// Redis连接信息
-		fmt.Sprintf("%s:%s", core.RedisConfig.Host, core.RedisConfig.Port),
+		fmt.Sprintf("%s:%s", core.SystemConfig.RedisConfig.Host, core.SystemConfig.RedisConfig.Port),
 		// 密码
-		redis.DialPassword(core.RedisConfig.Password),
+		redis.DialPassword(core.SystemConfig.RedisConfig.Password),
 		// 默认使用数据库
-		redis.DialDatabase(core.RedisConfig.Db),
+		redis.DialDatabase(core.SystemConfig.RedisConfig.Db),
 		redis.DialKeepAlive(1*time.Second),
 		redis.DialConnectTimeout(5*time.Second),
 		redis.DialReadTimeout(1*time.Second),
 		redis.DialWriteTimeout(1*time.Second))
 	if err != nil {
-		logger.Log.Panicf("Redis初始化连接失败: %v", err.Error())
+		log.Panicf("Redis初始化连接失败: %v", err.Error())
 		//os.Exit(1)
 	} else {
-		logger.Log.Info("Redis连接初始化成功")
+		log.Info("Redis连接初始化成功")
 		RedisClient = redisConn{
 			client: conn,
 		}

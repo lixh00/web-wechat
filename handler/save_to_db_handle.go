@@ -17,7 +17,7 @@ func saveToDb(ctx *openwechat.MessageContext) {
 	// TODO 需要解析成支持的结构体
 
 	type weChatMsg struct {
-		Uin          int
+		Uin          int64
 		MsgId        string
 		MsgType      openwechat.MessageType
 		Content      string

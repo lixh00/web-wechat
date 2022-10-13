@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"web-wechat/core"
-	"web-wechat/logger"
 	"web-wechat/oss"
 )
 
@@ -49,24 +49,24 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 	// 解析xml为结构体
 	var data ImageMessageData
 	if strings.HasPrefix(ctx.Content, "@") && !strings.Contains(ctx.Content, " ") {
-		logger.Log.Debug("消息内容为图片资源ID，不解析为结构体")
+		log.Debug("消息内容为图片资源ID，不解析为结构体")
 	} else if err := xml.Unmarshal([]byte(ctx.Content), &data); err != nil {
-		logger.Log.Errorf("消息解析失败: %v", err.Error())
-		logger.Log.Debugf("发信人: %v ==> 原始内容: %v", senderUser, ctx.Content)
+		log.Errorf("消息解析失败: %v", err.Error())
+		log.Debugf("发信人: %v ==> 原始内容: %v", senderUser, ctx.Content)
 		return
 	}
 
-	logger.Log.Infof("[收到新图片消息] == 发信人：%v", senderUser)
+	log.Infof("[收到新图片消息] == 发信人：%v", senderUser)
 	// 下载图片资源
 	fileResp, err := ctx.GetFile()
 	if err != nil {
-		logger.Log.Errorf("图片下载失败: %v", err.Error())
+		log.Errorf("图片下载失败: %v", err.Error())
 		return
 	}
 	defer fileResp.Body.Close()
-	imgFileByte, err := ioutil.ReadAll(fileResp.Body)
+	imgFileByte, err := io.ReadAll(fileResp.Body)
 	if err != nil {
-		logger.Log.Errorf("图片读取错误: %v", err.Error())
+		log.Errorf("图片读取错误: %v", err.Error())
 		return
 	} else {
 		// 读取文件相关信息
@@ -79,14 +79,14 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 		}
 
 		// 上传文件
-		reader2 := ioutil.NopCloser(bytes.NewReader(imgFileByte))
+		reader2 := io.NopCloser(bytes.NewReader(imgFileByte))
 		flag := oss.SaveToOss(reader2, contentType, fileName)
 		if flag {
-			fileUrl := fmt.Sprintf("https://%v/%v/%v", core.OssConfig.Endpoint, core.OssConfig.BucketName, fileName)
-			logger.Log.Infof("图片保存成功，图片链接: %v", fileUrl)
+			fileUrl := fmt.Sprintf("https://%v/%v/%v", core.SystemConfig.OssConfig.Endpoint, core.SystemConfig.OssConfig.BucketName, fileName)
+			log.Infof("图片保存成功，图片链接: %v", fileUrl)
 			ctx.Content = fileUrl
 		} else {
-			logger.Log.Error("图片保存失败")
+			log.Error("图片保存失败")
 		}
 	}
 	ctx.Next()
