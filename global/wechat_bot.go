@@ -203,7 +203,7 @@ func checkHotLogin(appKey string) bool {
 					if overHours < 1 {
 						log.Errorf("[%v]状态异常", appKey)
 					}
-					log.Debugf("[%v]距离到期时间还剩 %v 小时", appKey, overHours)
+					log.Debugf("[%v]距离到期时间还剩 %.2f 小时", appKey, overHours)
 					// 小于11小时就返回true，表示需要热登录
 					return overHours < 11
 				}
