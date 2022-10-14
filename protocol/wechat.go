@@ -7,6 +7,7 @@ import (
 	"gitee.ltd/lxh/logger/log"
 	. "github.com/eatmoreapple/openwechat"
 	"net/url"
+	"time"
 	. "web-wechat/db"
 )
 
@@ -123,10 +124,10 @@ func (f *RedisHotReloadStorage) Read(p []byte) (n int, err error) {
 
 // Dump 重写更新热登录数据，保存到Redis
 func (f *RedisHotReloadStorage) Write(p []byte) (n int, err error) {
-	err = RedisClient.SetWithTimeout(f.Key, string(p), "86400")
+	err = RedisClient.SetWithTimeout(f.Key, string(p), 2*24*time.Hour)
 	if err != nil {
 		log.Errorf("保存微信热登录信息失败: %v", err.Error())
-		return 0, err
+		return
 	}
 	return len(p), nil
 }
