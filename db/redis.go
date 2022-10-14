@@ -1,17 +1,17 @@
 package db
 
 import (
-	"errors"
+	"context"
 	"fmt"
 	"gitee.ltd/lxh/logger/log"
-	"github.com/garyburd/redigo/redis"
+	"github.com/go-redis/redis/v8"
 	"time"
 	"web-wechat/core"
 )
 
 // Redis连接对象
 type redisConn struct {
-	client redis.Conn
+	client *redis.Client
 }
 
 var RedisClient redisConn
@@ -19,63 +19,39 @@ var RedisClient redisConn
 // InitRedisConnHandle 初始化Redis连接对象
 func InitRedisConnHandle() {
 	// 初始化连接
-	conn, err := redis.Dial("tcp",
-		// Redis连接信息
-		fmt.Sprintf("%s:%s", core.SystemConfig.RedisConfig.Host, core.SystemConfig.RedisConfig.Port),
-		// 密码
-		redis.DialPassword(core.SystemConfig.RedisConfig.Password),
-		// 默认使用数据库
-		redis.DialDatabase(core.SystemConfig.RedisConfig.Db),
-		redis.DialKeepAlive(1*time.Second),
-		redis.DialConnectTimeout(5*time.Second),
-		redis.DialReadTimeout(1*time.Second),
-		redis.DialWriteTimeout(1*time.Second))
-	if err != nil {
-		log.Panicf("Redis初始化连接失败: %v", err.Error())
-		//os.Exit(1)
-	} else {
-		log.Info("Redis连接初始化成功")
-		RedisClient = redisConn{
-			client: conn,
-		}
+	conn := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%v", core.SystemConfig.RedisConfig.Host, core.SystemConfig.RedisConfig.Port),
+		Password: core.SystemConfig.RedisConfig.Password,
+		DB:       core.SystemConfig.RedisConfig.Db,
+	})
+	if err := conn.Ping(context.Background()).Err(); err != nil {
+		log.Panicf("Redis初始化失败: %v", err.Error())
 	}
-
-	//defer c.Close()
+	log.Debug("Redis连接初始化成功")
+	RedisClient = redisConn{client: conn}
 }
 
 // GetData 获取数据
 func (r *redisConn) GetData(key string) (string, error) {
-	return redis.String(r.client.Do("get", key))
+	return r.client.Get(context.Background(), key).Result()
 }
 
 // GetKeys 获取key列表
 func (r *redisConn) GetKeys(key string) ([]string, error) {
-	return redis.Strings(r.client.Do("keys", key))
+	return r.client.Keys(context.Background(), key).Result()
 }
 
 // Set 保存数据
 func (r *redisConn) Set(key string, value string) error {
-	_, err := r.client.Do("set", key, value)
-	if err != nil {
-		return errors.New("Redis保存数据失败")
-	}
-	return nil
+	return r.client.Set(context.Background(), key, value, 0).Err()
 }
 
 // SetWithTimeout 保存带过期时间的数据(单位：秒)
-func (r *redisConn) SetWithTimeout(key string, value string, timeout string) error {
-	_, err := r.client.Do("set", key, value, "EX", timeout)
-	if err != nil {
-		return errors.New("Redis保存数据失败")
-	}
-	return nil
+func (r *redisConn) SetWithTimeout(key string, value string, timeout time.Duration) error {
+	return r.client.Set(context.Background(), key, value, timeout).Err()
 }
 
 // Del 根据key删除Redis数据
 func (r *redisConn) Del(key string) error {
-	_, err := r.client.Do("DEL", key)
-	if err != nil {
-		return err
-	}
-	return nil
+	return r.client.Del(context.Background(), key).Err()
 }
