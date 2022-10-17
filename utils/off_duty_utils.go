@@ -56,10 +56,17 @@ func (od offDuty) GetNextHolidayOrWeekend() (string, int) {
 // GetNextHoliday 获取下一个节日并返回距离多少天
 func (od offDuty) GetNextHoliday() (string, int) {
 	t := time.Now()
+	thisYearEndDay := time.Date(t.Year(), 12, 31, 0, 0, 0, 0, time.Local)
+	endDay := int(thisYearEndDay.Sub(t).Hours() / 24)
+
 	name := ""
 	i := 0
 	lunar := calendar.NewSolarFromYmd(t.Year(), int(t.Month()), t.Day())
 	for {
+		if i >= endDay {
+			i = -1
+			break
+		}
 		h := HolidayUtil.GetHoliday(lunar.ToYmd())
 		if h == nil {
 			lunar = lunar.Next(1)
