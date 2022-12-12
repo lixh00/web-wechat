@@ -17,7 +17,9 @@ func HandleMessage(bot *openwechat.Bot) {
 	plugins.ChangePluginStatus(true)
 	// 注册插件
 	//dispatcher.OnText(plugins.WeChatPluginInstance.Status) // 优先处理插件状态相关指令
-	dispatcher.RegisterHandler(plugins.WeChatPluginInstance.CheckIsOpen, plugins.WeChatPluginInstance.Command)
+	dispatcher.RegisterHandler(plugins.WeChatPluginInstance.CheckIsOpen,
+		plugins.WeChatPluginInstance.OpenGPT,
+		plugins.WeChatPluginInstance.Command)
 
 	// 注册文本消息处理函数
 	dispatcher.OnText(textMessageHandle)

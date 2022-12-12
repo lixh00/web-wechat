@@ -37,6 +37,9 @@ func (weChatPlugin) checkFestivals(ctx *openwechat.MessageContext) {
 	// 获取最近的节假日或周末
 	d, t := utils.OffDuty().GetNextHoliday()
 	replyStr := fmt.Sprintf("距离%v还有%v天", d, t)
+	if t == -1 {
+		replyStr = "今年的节日好像已经过完了咯~"
+	}
 	if t == 0 {
 		replyStr = fmt.Sprintf("今天已经是%v了啊，不会你还没放假吧？", d)
 	}

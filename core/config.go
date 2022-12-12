@@ -9,10 +9,18 @@ var SystemConfig systemConfig
 
 // 系统配置
 type systemConfig struct {
-	RedisConfig   redisConfig `mapstructure:"redis"`
-	MySQLConfig   mysqlConfig `mapstructure:"mysql"`
-	OssConfig     ossConfig   `mapstructure:"oss"`
-	MongoDbConfig mongoConfig `mapstructure:"mongodb"`
+	RedisConfig   redisConfig  `mapstructure:"redis"`
+	MySQLConfig   mysqlConfig  `mapstructure:"mysql"`
+	OssConfig     ossConfig    `mapstructure:"oss"`
+	MongoDbConfig mongoConfig  `mapstructure:"mongodb"`
+	OpenAiConfig  openAiConfig `mapstructure:"openai"`
+}
+
+//	openAiConfig
+//	@description: openai配置
+type openAiConfig struct {
+	Enable bool   `mapstructure:"enable"` // 是否启用
+	ApiKey string `mapstructure:"apikey"` // apikey
 }
 
 // Redis配置
@@ -51,51 +59,3 @@ type mongoConfig struct {
 func (c mongoConfig) GetClientUri() string {
 	return fmt.Sprintf("mongodb://%v:%v@%v:%v/%v?ssl=false&authSource=admin", c.Username, c.Password, c.Host, c.Port, c.DbName)
 }
-
-//
-//// InitRedisConfig 初始化Redis配置
-//func InitRedisConfig() {
-//	// RedisHost Redis主机
-//	host := utils.GetEnvVal("REDIS_HOST", "wechat_redis")
-//	// RedisPort Redis端口
-//	port := utils.GetEnvVal("REDIS_PORT", "6379")
-//	// RedisPassword Redis密码
-//	password := utils.GetEnvVal("REDIS_PWD", "")
-//	// Redis库
-//	db := utils.GetEnvIntVal("REDIS_DB", 0)
-//
-//	RedisConfig = redisConfig{
-//		Host:     host,
-//		Port:     port,
-//		Password: password,
-//		Db:       db,
-//	}
-//}
-//
-//// InitOssConfig 初始化OSS配置
-//func InitOssConfig() {
-//	endpoint := utils.GetEnvVal("OSS_ENDPOINT", "wechat_oss")
-//	accessKeyID := utils.GetEnvVal("OSS_KEY", "minio")
-//	secretAccessKey := utils.GetEnvVal("OSS_SECRET", "minio")
-//	bucketName := utils.GetEnvVal("OSS_BUCKET", "wechat")
-//	useSSL := utils.GetEnvBoolVal("OSS_SSL", true)
-//
-//	OssConfig = ossConfig{
-//		Endpoint:        endpoint,
-//		AccessKeyID:     accessKeyID,
-//		SecretAccessKey: secretAccessKey,
-//		BucketName:      bucketName,
-//		UseSsl:          useSSL,
-//	}
-//}
-//
-//// InitMongoConfig 初始化MongoDB配置
-//func InitMongoConfig() {
-//	host := utils.GetEnvVal("MONGO_HOST", "wechat_mongo")
-//	port := utils.GetEnvIntVal("MONGO_PORT", 27017)
-//	user := utils.GetEnvVal("MONGO_USER", "wechat")
-//	password := utils.GetEnvVal("MONGO_PWD", "wechat")
-//	dbName := utils.GetEnvVal("MONGO_DB", "web-wechat")
-//
-//	MongoDbConfig = mongoConfig{host, port, user, password, dbName}
-//}
