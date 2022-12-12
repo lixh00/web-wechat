@@ -1,6 +1,13 @@
 ## WebWechat
 
-基于`Golang`语言和`Gin`框架的个人微信系统
+基于`Golang`语言和`Gin`框架的个人微信系统，微信协议基于[openwechat](https://github.com/eatmoreapple/openwechat)
+
+## 阿巴阿巴
+2022-12-12，跟个风对接了`ChatGPT`，指令格式(@openai是固定句式，不代表任何一个微信账号)：
+```text
+@openai
+你要说的话
+```
 
 ## 使用方式
 
