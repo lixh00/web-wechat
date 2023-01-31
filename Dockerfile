@@ -2,7 +2,7 @@ FROM golang:alpine as builder
 
 WORKDIR /builder
 COPY . .
-RUN apk add upx && go mod download && go build -o app && upx -9 app
+RUN go mod download && go build -o app
 RUN ls -lh && chmod +x ./app
 
 FROM repo.lxh.io/alpine:3.16.0 as runner
