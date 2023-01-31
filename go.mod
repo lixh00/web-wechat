@@ -3,13 +3,12 @@ module web-wechat
 go 1.18
 
 require (
-	github.com/eatmoreapple/openwechat v1.2.6
+	github.com/eatmoreapple/openwechat v1.3.7
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/minio/minio-go/v7 v7.0.34
-	github.com/robfig/cron v1.2.0
 	go.mongodb.org/mongo-driver v1.10.1
 	go.uber.org/zap v1.23.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

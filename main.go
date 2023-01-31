@@ -65,12 +65,6 @@ func main() {
 	// 初始化Redis里登录的数据
 	global.InitBotWithStart()
 
-	// 定时更新 Bot 的热登录数据
-	global.UpdateHotLoginData()
-
-	// 保活
-	//global.KeepAliveHandle()
-
 	// 监听端口
 	_ = app.Run(":8888")
 }

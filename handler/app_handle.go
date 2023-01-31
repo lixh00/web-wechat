@@ -104,7 +104,7 @@ func appMessageHandle(ctx *openwechat.MessageContext) {
 			// 读取文件相关信息
 			contentType := http.DetectContentType(imgFileByte)
 			fileName := fmt.Sprintf("%v_%v", ctx.MsgId, data.Appmsg.Title)
-			if user, err := ctx.Bot.GetCurrentUser(); err == nil {
+			if user, err := ctx.Bot().GetCurrentUser(); err == nil {
 				uin := user.Uin
 				fileName = fmt.Sprintf("%v/%v", uin, fileName)
 			}
