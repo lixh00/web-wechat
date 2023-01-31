@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
-	"github.com/golang-module/carbon"
+	"github.com/golang-module/carbon/v2"
 	"time"
 	"web-wechat/resource"
 	"web-wechat/utils"

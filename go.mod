@@ -20,7 +20,7 @@ require (
 	github.com/6tail/lunar-go v1.2.18
 	github.com/PullRequestInc/go-gpt3 v1.1.10
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/golang-module/carbon v1.6.9
+	github.com/golang-module/carbon/v2 v2.2.3
 	github.com/spf13/viper v1.13.0
 )
 
@@ -37,16 +37,12 @@ require (
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/gobuffalo/envy v1.7.0 // indirect
-	github.com/gobuffalo/packd v0.3.0 // indirect
-	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/goccy/go-json v0.9.11 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/klauspost/cpuid/v2 v2.1.1 // indirect
@@ -70,7 +66,6 @@ require (
 	github.com/prometheus/common v0.34.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/prometheus/prometheus v1.8.2-0.20201028100903-3245b3267b24 // indirect
-	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
