@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE: prinsss/ga-hit-counter
+  IMAGE: ${{ github.repository }}
 
 jobs:
   build-and-push:
