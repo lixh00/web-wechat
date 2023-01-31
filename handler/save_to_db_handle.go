@@ -28,7 +28,7 @@ func saveToDb(ctx *openwechat.MessageContext) {
 		DateTime     string
 	}
 
-	slew, _ := ctx.Bot.GetCurrentUser()
+	slew, _ := ctx.Bot().GetCurrentUser()
 	sender, _ := ctx.Sender()
 	senderUser := sender.NickName
 	groupName := ""

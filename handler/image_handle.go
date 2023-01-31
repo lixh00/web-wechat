@@ -73,7 +73,7 @@ func imageMessageHandle(ctx *openwechat.MessageContext) {
 		contentType := http.DetectContentType(imgFileByte)
 		fileType := strings.Split(contentType, "/")[1]
 		fileName := fmt.Sprintf("%v.%v", ctx.MsgId, fileType)
-		if user, err := ctx.Bot.GetCurrentUser(); err == nil {
+		if user, err := ctx.Bot().GetCurrentUser(); err == nil {
 			uin := user.Uin
 			fileName = fmt.Sprintf("%v/%v", uin, fileName)
 		}

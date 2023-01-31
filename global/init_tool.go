@@ -2,6 +2,7 @@ package global
 
 import (
 	"gitee.ltd/lxh/logger/log"
+	"github.com/eatmoreapple/openwechat"
 	. "web-wechat/db"
 	"web-wechat/protocol"
 )
@@ -21,10 +22,10 @@ func InitBotWithStart() {
 		log.Debugf("当前热登录AppKey: %v", appKey)
 		bot := InitWechatBotHandle()
 		storage := protocol.NewRedisHotReloadStorage(key)
-		if err = bot.HotLogin(storage, false); err != nil {
+		if err = bot.HotLogin(storage, openwechat.HotLoginWithRetry(false)); err != nil {
 			log.Infof("[%v] 热登录失败，错误信息：%v", appKey, err.Error())
 			// 登录失败，删除热登录数据
-			if err := RedisClient.Del(key); err != nil {
+			if err = RedisClient.Del(key); err != nil {
 				log.Errorf("[%v] Redis缓存删除失败，错误信息：%v", key, err.Error())
 			}
 			continue
