@@ -5,7 +5,6 @@ import (
 	"gitee.ltd/lxh/logger/log"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/gin-gonic/gin"
-	"time"
 	"unicode/utf8"
 	"web-wechat/core"
 	"web-wechat/global"
@@ -83,8 +82,8 @@ func LoginHandle(ctx *gin.Context) {
 
 	// 热登录
 	var opts []openwechat.BotLoginOption
-	opts = append(opts, openwechat.NewRetryLoginOption())                        // 热登录失败使用扫码登录，适配第一次登录的时候无热登录数据
-	opts = append(opts, openwechat.NewSyncReloadDataLoginOption(10*time.Minute)) // 十分钟同步一次热登录数据
+	opts = append(opts, openwechat.NewRetryLoginOption()) // 热登录失败使用扫码登录，适配第一次登录的时候无热登录数据
+	//opts = append(opts, openwechat.NewSyncReloadDataLoginOption(10*time.Minute)) // 十分钟同步一次热登录数据
 
 	// 登录
 	if err := bot.HotLogin(storage, opts...); err != nil {
