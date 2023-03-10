@@ -35,5 +35,5 @@ func HandleMessage(bot *openwechat.Bot) {
 	dispatcher.RegisterHandler(checkIsOther, otherMessageHandle)
 
 	// 注册消息处理器
-	bot.MessageHandler = openwechat.DispatchMessage(dispatcher)
+	bot.MessageHandler = dispatcher.AsMessageHandler()
 }
