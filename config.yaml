@@ -33,3 +33,4 @@ oss:
 openai:
   enable: true
   apikey: xxxx # 在 https://beta.openai.com/account/api-keys 申请
+  proxy: http://127.0.0.1:7890 # 代理

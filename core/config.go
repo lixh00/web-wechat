@@ -16,11 +16,12 @@ type systemConfig struct {
 	OpenAiConfig  openAiConfig `mapstructure:"openai"`
 }
 
-//	openAiConfig
-//	@description: openai配置
+// openAiConfig
+// @description: openai配置
 type openAiConfig struct {
 	Enable bool   `mapstructure:"enable"` // 是否启用
 	ApiKey string `mapstructure:"apikey"` // apikey
+	Proxy  string `mapstructure:"proxy"`  // 代理
 }
 
 // Redis配置
