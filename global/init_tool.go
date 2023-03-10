@@ -22,7 +22,7 @@ func InitBotWithStart() {
 		log.Debugf("当前热登录AppKey: %v", appKey)
 		bot := InitWechatBotHandle()
 		storage := protocol.NewRedisHotReloadStorage(key)
-		if err = bot.HotLogin(storage, openwechat.HotLoginWithRetry(false)); err != nil {
+		if err = bot.HotLogin(storage, openwechat.NewRetryLoginOption()); err != nil {
 			log.Infof("[%v] 热登录失败，错误信息：%v", appKey, err.Error())
 			// 登录失败，删除热登录数据
 			if err = RedisClient.Del(key); err != nil {
