@@ -79,7 +79,7 @@ func videoMessageHandle(ctx *openwechat.MessageContext) {
 		reader2 := io.NopCloser(bytes.NewReader(videoFileByte))
 		flag := oss.SaveToOss(reader2, contentType, fileName)
 		if flag {
-			fileUrl := fmt.Sprintf("http://%v/%v/%v", core.SystemConfig.OssConfig.Endpoint, core.SystemConfig.OssConfig.BucketName, fileName)
+			fileUrl := fmt.Sprintf("https://%v/%v/%v", core.SystemConfig.OssConfig.Endpoint, core.SystemConfig.OssConfig.BucketName, fileName)
 			log.Infof("视频保存成功，视频链接: %v", fileUrl)
 			ctx.Content = fileUrl
 		} else {
