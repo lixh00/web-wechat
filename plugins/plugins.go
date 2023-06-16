@@ -2,6 +2,8 @@ package plugins
 
 import "github.com/eatmoreapple/openwechat"
 
+var PluginSwitch = false
+
 type weChatPlugin struct {
 	isOpen bool
 }
@@ -17,6 +19,7 @@ func init() {
 // ChangePluginStatus 修改插件状态
 func ChangePluginStatus(isOpen bool) {
 	WeChatPluginInstance = &weChatPlugin{isOpen}
+	PluginSwitch = isOpen
 }
 
 // CheckIsOpen 检查是否开启微信插件
