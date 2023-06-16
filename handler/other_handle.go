@@ -8,7 +8,7 @@ import (
 
 func checkIsOther(message *openwechat.Message) bool {
 	// 处理除文字消息和通知消息之外，并且不是自己发送的消息
-	return !message.IsText() && !message.IsNotify() && !message.IsPicture() && !message.IsEmoticon() && !message.IsMedia() //  && !message.IsSendBySelf()
+	return !message.IsText() && !message.IsNotify() && !message.IsPicture() && !message.IsEmoticon() && !message.IsVideo() && !message.IsMedia() //  && !message.IsSendBySelf()
 }
 
 // 未定义消息处理
