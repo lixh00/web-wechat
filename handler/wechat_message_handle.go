@@ -19,7 +19,8 @@ func HandleMessage(bot *openwechat.Bot) {
 	//dispatcher.OnText(plugins.WeChatPluginInstance.Status) // 优先处理插件状态相关指令
 	dispatcher.RegisterHandler(plugins.WeChatPluginInstance.CheckIsOpen,
 		plugins.WeChatPluginInstance.OpenGPT,
-		plugins.WeChatPluginInstance.Command)
+		plugins.WeChatPluginInstance.Command,
+		plugins.WeChatPluginInstance.Status)
 
 	// 注册文本消息处理函数
 	dispatcher.OnText(textMessageHandle)
@@ -27,6 +28,8 @@ func HandleMessage(bot *openwechat.Bot) {
 	dispatcher.OnImage(imageMessageHandle)
 	// 注册表情包消息处理器
 	dispatcher.OnEmoticon(emoticonMessageHandle)
+	// 注册视频消息处理器
+	dispatcher.OnVideo(videoMessageHandle)
 	// APP消息处理
 	dispatcher.OnMedia(appMessageHandle)
 	// 保存消息
