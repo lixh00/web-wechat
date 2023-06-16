@@ -16,8 +16,8 @@ type systemConfig struct {
 	OpenAiConfig  openAiConfig `mapstructure:"openai"`
 }
 
-//	openAiConfig
-//	@description: openai配置
+// openAiConfig
+// @description: openai配置
 type openAiConfig struct {
 	Enable bool   `mapstructure:"enable"` // 是否启用
 	ApiKey string `mapstructure:"apikey"` // apikey
@@ -42,8 +42,8 @@ type mysqlConfig struct {
 
 type ossConfig struct {
 	Endpoint        string `mapstructure:"endpoint"`        // 接口地址
-	AccessKeyID     string `mapstructure:"accessKeyID"`     // 账号
-	SecretAccessKey string `mapstructure:"secretAccessKey"` // 密码
+	AccessKeyID     string `mapstructure:"accessKeyId"`     // 账号
+	SecretAccessKey string `mapstructure:"accessKeySecret"` // 密码
 	BucketName      string `mapstructure:"bucket"`          // 桶名称
 	UseSsl          bool   `mapstructure:"ssl"`             // 是否使用SSL
 }
